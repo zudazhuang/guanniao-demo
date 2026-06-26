@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0" />
     <title>谷咕咕</title>
     <script>
-      window.__GUGUGU_LAYOUT_VERSION__ = "feed-tabs-type-v1-20260627";
+      window.__GUGUGU_LAYOUT_VERSION__ = "feed-tabs-type-v3-20260627";
 
       function setGuguguViewport() {
         const root = document.documentElement;
@@ -594,7 +594,7 @@
         background: transparent;
         color: #8a8d91;
         font-size: 16px;
-        font-weight: 620;
+        font-weight: 520;
         line-height: 1;
         cursor: pointer;
       }
@@ -641,7 +641,7 @@
       }
 
       .feed-tabs {
-        display: flex;
+        display: none;
         gap: 8px;
         margin: 0 -2px 10px;
         overflow-x: auto;
@@ -7204,7 +7204,7 @@
             <button type="button" data-feed-channel="关注">关注</button>
             <button class="active" type="button" data-feed-channel="发现">发现</button>
             <button type="button" data-feed-channel="同城">同城</button>
-            <button type="button" data-open-community>社区</button>
+            <button type="button" data-open-community>社群</button>
           </div>
           <button class="feed-publish-button" type="button" data-open-composer aria-label="发现鸟贴"><b>＋</b></button>
         </header>
@@ -9900,8 +9900,8 @@ const searchOptions = Object.keys(birdMaps);
       }
 
       function renderCommunityFeed() {
-        document.querySelector("[data-feed-channel-tabs]").innerHTML = ["关注", "发现", "同城", "社区"].map((channel) => (
-          channel === "社区"
+        document.querySelector("[data-feed-channel-tabs]").innerHTML = ["关注", "发现", "同城", "社群"].map((channel) => (
+          channel === "社群"
             ? `<button type="button" data-open-community>${channel}</button>`
             : `<button class="${channel === activeFeedChannel ? "active" : ""}" type="button" data-feed-channel="${channel}">${channel}</button>`
         )).join("");
