@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0" />
     <title>谷咕咕</title>
     <script>
-      window.__GUGUGU_LAYOUT_VERSION__ = "gear-bottom-tight-v1-20260627";
+      window.__GUGUGU_LAYOUT_VERSION__ = "recognition-audio-fixed-qr-v1-20260627";
 
       function setGuguguViewport() {
         const root = document.documentElement;
@@ -8490,6 +8490,7 @@
       let recognizedBirdName = "夜鹭";
       let recognitionRunId = 0;
       let recognitionModelPromise = null;
+      const recognitionSignatureCache = new Map();
 
       const tfScriptSources = [
         "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js",
@@ -11891,11 +11892,123 @@ const searchOptions = Object.keys(birdMaps);
         const profile = getBirdProfile(name);
         const group = profile?.group || profile?.location?.split(" · ")?.pop() || "南京常见鸟种";
         const status = profile?.status || profile?.badge || "候选";
-        const label = predictionLabel ? `模型线索：${getPredictionHint(predictionLabel)}` : "端上模型识别";
+        const label = predictionLabel || "南京图鉴视觉匹配";
         return `${group} · ${status} · ${label} · ${confidence}%`;
       }
 
-      function buildRecognitionCandidates(predictions) {
+      function addRecognitionScore(scores, labelsByBird, name, score, label) {
+        const profile = getBirdProfile(name);
+        if (!profile || !Number.isFinite(score) || score <= 0) return;
+        scores.set(name, (scores.get(name) || 0) + score);
+        if (!labelsByBird.has(name) || score > (labelsByBird.get(name).score || 0)) {
+          labelsByBird.set(name, { label, score });
+        }
+      }
+
+      function getFilenameBirdHints(fileName) {
+        const value = String(fileName || "").toLowerCase();
+        if (!value) return [];
+        const aliases = [
+          ["夜鹭", "night-heron", "nycticorax"],
+          ["白头鹎", "bulbul", "light-vented"],
+          ["乌鸫", "blackbird", "thrush"],
+          ["白鹭", "little-egret", "egret"],
+          ["池鹭", "pond-heron"],
+          ["苍鹭", "grey-heron", "gray-heron"],
+          ["普通翠鸟", "kingfisher"],
+          ["黑水鸡", "moorhen"],
+          ["普通鸬鹚", "cormorant"],
+          ["绿头鸭", "mallard"],
+          ["喜鹊", "magpie"],
+          ["灰喜鹊", "azure-winged-magpie"],
+          ["珠颈斑鸠", "spotted-dove"],
+          ["山斑鸠", "turtle-dove"],
+          ["树麻雀", "sparrow"],
+          ["戴胜", "hoopoe"],
+          ["大山雀", "tit"],
+          ["家燕", "swallow"],
+          ["棕背伯劳", "shrike"],
+          ["白鹡鸰", "wagtail"],
+        ];
+        return aliases.filter(([, ...terms]) => terms.some((term) => value.includes(term))).map(([name]) => name);
+      }
+
+      function getRecognitionProfiles(priorityNames = []) {
+        const names = new Set(priorityNames);
+        const profiles = new Map();
+        const add = (item) => {
+          if (!item?.name || !item?.image || profiles.has(item.name)) return;
+          profiles.set(item.name, item);
+        };
+        starBirds.forEach(add);
+        birdLibrary.slice(0, 42).forEach(add);
+        birdLibrary.forEach((bird) => {
+          if (names.has(bird.name)) add(bird);
+        });
+        return [...profiles.values()];
+      }
+
+      async function getImageSignature(source) {
+        const cacheKey = typeof source === "string" ? source : "";
+        if (cacheKey && recognitionSignatureCache.has(cacheKey)) return recognitionSignatureCache.get(cacheKey);
+        const img = typeof source === "string" ? await decodeRecognitionImage(source) : source;
+        const canvas = document.createElement("canvas");
+        const size = 48;
+        canvas.width = size;
+        canvas.height = size;
+        const context = canvas.getContext("2d", { willReadFrequently: true });
+        context.drawImage(img, 0, 0, size, size);
+        const data = context.getImageData(0, 0, size, size).data;
+        const hue = Array.from({ length: 12 }, () => 0);
+        const ratios = { white: 0, dark: 0, orange: 0, blue: 0, green: 0, brown: 0, red: 0 };
+        let colorful = 0;
+        for (let index = 0; index < data.length; index += 4) {
+          const r = data[index] / 255;
+          const g = data[index + 1] / 255;
+          const b = data[index + 2] / 255;
+          const max = Math.max(r, g, b);
+          const min = Math.min(r, g, b);
+          const light = (max + min) / 2;
+          const delta = max - min;
+          const saturation = delta === 0 ? 0 : delta / (1 - Math.abs(2 * light - 1));
+          let h = 0;
+          if (delta !== 0) {
+            if (max === r) h = ((g - b) / delta + (g < b ? 6 : 0)) / 6;
+            if (max === g) h = ((b - r) / delta + 2) / 6;
+            if (max === b) h = ((r - g) / delta + 4) / 6;
+          }
+          const bin = Math.min(11, Math.floor(h * 12));
+          const weight = saturation * 0.75 + 0.25;
+          hue[bin] += weight;
+          colorful += weight;
+          if (light > 0.72 && saturation < 0.32) ratios.white += 1;
+          if (light < 0.28) ratios.dark += 1;
+          if ((h < 0.08 || h > 0.94) && saturation > 0.38 && light > 0.28) ratios.red += 1;
+          if (h >= 0.06 && h < 0.14 && saturation > 0.28 && light > 0.25) ratios.orange += 1;
+          if (h >= 0.45 && h < 0.64 && saturation > 0.2) ratios.blue += 1;
+          if (h >= 0.20 && h < 0.42 && saturation > 0.18) ratios.green += 1;
+          if (h >= 0.05 && h < 0.17 && saturation > 0.16 && light < 0.58) ratios.brown += 1;
+        }
+        const pixelCount = size * size;
+        Object.keys(ratios).forEach((key) => {
+          ratios[key] = ratios[key] / pixelCount;
+        });
+        const totalHue = colorful || 1;
+        const signature = { hue: hue.map((value) => value / totalHue), ratios };
+        if (cacheKey) recognitionSignatureCache.set(cacheKey, signature);
+        return signature;
+      }
+
+      function compareImageSignatures(a, b) {
+        const hueDiff = a.hue.reduce((sum, value, index) => sum + Math.abs(value - b.hue[index]), 0);
+        const hueScore = clamp(1 - hueDiff / 1.7, 0, 1);
+        const keys = Object.keys(a.ratios);
+        const ratioDiff = keys.reduce((sum, key) => sum + Math.abs(a.ratios[key] - b.ratios[key]), 0) / keys.length;
+        const ratioScore = clamp(1 - ratioDiff * 4.8, 0, 1);
+        return clamp(hueScore * 0.62 + ratioScore * 0.38, 0, 1);
+      }
+
+      async function buildRecognitionCandidates(predictions, imageElement, fileName = "") {
         const scores = new Map();
         const labelsByBird = new Map();
         predictions.forEach((prediction, predictionIndex) => {
@@ -11903,24 +12016,51 @@ const searchOptions = Object.keys(birdMaps);
           recognitionRules.forEach((rule) => {
             if (!rule.terms.some((term) => label.includes(term))) return;
             rule.birds.forEach((name, birdIndex) => {
-              const profile = getBirdProfile(name);
-              if (!profile) return;
               const score = (prediction.probability || 0) * rule.weight * (1 - predictionIndex * 0.055) * (1 - birdIndex * 0.08);
-              scores.set(name, (scores.get(name) || 0) + score);
-              if (!labelsByBird.has(name)) labelsByBird.set(name, prediction.className);
+              addRecognitionScore(scores, labelsByBird, name, score, `模型线索：${getPredictionHint(prediction.className)}`);
             });
           });
         });
+
+        getFilenameBirdHints(fileName).forEach((name) => {
+          addRecognitionScore(scores, labelsByBird, name, 1.25, "文件名线索命中");
+        });
+
+        const inputSignature = await getImageSignature(imageElement);
+        const visualMatches = [];
+        const profiles = getRecognitionProfiles([...scores.keys()]);
+        await Promise.all(profiles.map(async (profile) => {
+          try {
+            const signature = await getImageSignature(profile.image);
+            const similarity = compareImageSignatures(inputSignature, signature);
+            visualMatches.push({ name: profile.name, similarity });
+            if (similarity > 0.48) {
+              addRecognitionScore(scores, labelsByBird, profile.name, (similarity - 0.42) * 1.8, `图鉴照片相似 ${Math.round(similarity * 100)}%`);
+            }
+          } catch (error) {
+            console.warn("skip recognition reference", profile.name, error);
+          }
+        }));
+
+        if (scores.size < 3) {
+          visualMatches
+            .sort((a, b) => b.similarity - a.similarity)
+            .slice(0, 5)
+            .forEach((match) => {
+              addRecognitionScore(scores, labelsByBird, match.name, Math.max(0.12, (match.similarity - 0.38) * 1.45), `图鉴照片相似 ${Math.round(match.similarity * 100)}%`);
+            });
+        }
 
         return [...scores.entries()]
           .sort((a, b) => b[1] - a[1])
           .slice(0, 3)
           .map(([name, score], index) => {
             const profile = getBirdProfile(name);
-            const confidence = clamp(Math.round(30 + score * 78 - index * 6), 18, 96);
+            const confidence = clamp(Math.round(36 + score * 32 - index * 5), 22, 97);
+            const evidence = labelsByBird.get(name)?.label || "南京图鉴视觉匹配";
             return {
               name,
-              meta: makeRecognitionMeta(name, labelsByBird.get(name), confidence),
+              meta: makeRecognitionMeta(name, evidence, confidence),
               score: `${confidence}%`,
               confidence,
               image: profile?.image || "./assets/gugugu-icon.png",
@@ -11966,14 +12106,14 @@ const searchOptions = Object.keys(birdMaps);
         }]);
       }
 
-      async function openRecognitionResult(image, sourceLabel) {
+      async function openRecognitionResult(image, sourceLabel, fileName = "") {
         const runId = ++recognitionRunId;
         recognitionPhoto = image;
         recognizedBirdName = "";
         document.querySelector("[data-recognition-source]").textContent = sourceLabel;
         document.querySelector("[data-recognition-image]").src = image;
         document.querySelector("[data-recognition-bird]").textContent = "识别中";
-        document.querySelector("[data-recognition-meta]").textContent = "正在加载端上视觉模型";
+        document.querySelector("[data-recognition-meta]").textContent = "正在加载端上视觉模型和南京图鉴";
         setRecognitionConfidence(0);
         renderRecognitionCandidates([{
           name: "模型识别中",
@@ -11988,7 +12128,7 @@ const searchOptions = Object.keys(birdMaps);
           if (runId !== recognitionRunId) return;
           const predictions = await model.classify(img, 10);
           if (runId !== recognitionRunId) return;
-          const candidates = buildRecognitionCandidates(predictions);
+          const candidates = await buildRecognitionCandidates(predictions, img, fileName);
           if (!candidates.length) {
             const labels = predictions.slice(0, 2).map((item) => item.className).join(" / ");
             renderRecognitionFallback(labels ? `模型没有检测到明确鸟类特征 · ${labels}` : "模型没有检测到明确鸟类特征");
@@ -12011,7 +12151,7 @@ const searchOptions = Object.keys(birdMaps);
         const file = event.target.files?.[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.addEventListener("load", () => openRecognitionResult(reader.result, recognitionSource));
+        reader.addEventListener("load", () => openRecognitionResult(reader.result, recognitionSource, file.name || ""));
         reader.readAsDataURL(file);
       }
 
