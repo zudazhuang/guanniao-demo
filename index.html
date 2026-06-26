@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0" />
     <title>谷咕咕</title>
     <script>
-      window.__GUGUGU_LAYOUT_VERSION__ = "community-composer-nav-v1-20260627";
+      window.__GUGUGU_LAYOUT_VERSION__ = "fixed-shell-v1-20260627";
 
       function setGuguguViewport() {
         const root = document.documentElement;
@@ -53,7 +53,6 @@
         --preview-scale: 1;
         --preview-offset-x: 0px;
         --preview-visual-height: 800px;
-        --phone-scroll-top: 0px;
         --tabbar-height: 56px;
         --album-panel-height: 252px;
       }
@@ -84,7 +83,7 @@
         transform: translateX(var(--preview-offset-x)) scale(var(--preview-scale));
         transform-origin: top left;
         overflow-x: hidden;
-        overflow-y: auto;
+        overflow-y: hidden;
         border-radius: 0;
         background: #03150d;
         color: #ffffff;
@@ -484,15 +483,36 @@
       .home-feed {
         position: absolute;
         z-index: 5;
-        top: var(--app-height);
+        top: 0;
         left: 0;
         right: 0;
-        min-height: 980px;
-        padding: 0 12px 118px;
+        bottom: var(--tabbar-height);
+        display: none;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 0 12px 18px;
         border-radius: 0;
         background: #ffffff;
         color: #17212b;
         box-shadow: 0 -18px 34px rgba(0, 0, 0, 0.22);
+        scrollbar-width: none;
+      }
+
+      .home-feed::-webkit-scrollbar {
+        display: none;
+      }
+
+      .feed-mode .home-feed {
+        display: block;
+      }
+
+      .feed-mode .hero-image,
+      .feed-mode .hero-shade,
+      .feed-mode .home-brand,
+      .feed-mode .top-actions,
+      .feed-mode .album-title-row,
+      .feed-mode .album-panel {
+        display: none;
       }
 
       .map-mode .home-feed,
@@ -874,7 +894,7 @@
       .community-screen {
         position: fixed;
         z-index: 24;
-        top: var(--phone-scroll-top);
+        top: 0;
         left: 50%;
         width: var(--app-width);
         height: calc(var(--app-height) - var(--tabbar-height));
@@ -1254,7 +1274,7 @@
       .community-search-screen {
         position: fixed;
         z-index: 26;
-        top: var(--phone-scroll-top);
+        top: 0;
         left: 50%;
         width: var(--app-width);
         height: calc(var(--app-height) - var(--tabbar-height));
@@ -1440,7 +1460,7 @@
       .community-chat-screen {
         position: fixed;
         z-index: 26;
-        top: var(--phone-scroll-top);
+        top: 0;
         left: 50%;
         width: var(--app-width);
         height: calc(var(--app-height) - var(--tabbar-height));
@@ -2217,7 +2237,7 @@
       .post-composer {
         position: fixed;
         z-index: 24;
-        top: var(--phone-scroll-top);
+        top: 0;
         left: 50%;
         width: var(--app-width);
         height: calc(var(--app-height) - var(--tabbar-height));
@@ -2697,7 +2717,7 @@
         position: fixed;
         z-index: 30;
         left: 50%;
-        top: calc(var(--phone-scroll-top) + var(--app-height) - var(--tabbar-height));
+        top: calc(var(--app-height) - var(--tabbar-height));
         bottom: auto;
         width: var(--app-width);
         height: var(--tabbar-height);
@@ -9934,7 +9954,6 @@ const searchOptions = Object.keys(birdMaps);
 
       function openCommunityScreen(focusCommunityId = "") {
         renderCommunityScreen(focusCommunityId);
-        syncPhoneScrollTop();
         document.querySelector("[data-community-screen]").classList.add("show");
         document.querySelector(".phone").classList.add("community-mode");
       }
@@ -10210,7 +10229,6 @@ const searchOptions = Object.keys(birdMaps);
         event?.stopPropagation();
         renderComposer();
         const composer = document.querySelector("[data-post-composer]");
-        syncPhoneScrollTop();
         document.querySelector(".phone").classList.add("composer-mode");
         composer.classList.add("show");
         composer.scrollTo({ top: 0, behavior: "auto" });
@@ -10246,7 +10264,7 @@ const searchOptions = Object.keys(birdMaps);
         activeFeedFilter = "推荐";
         closeComposer();
         renderCommunityFeed();
-        document.querySelector(".phone").scrollTo({ top: getHomeSnapTop(), behavior: "smooth" });
+        showFeed(true);
         showToast("观鸟贴已发布");
       }
 
@@ -10397,16 +10415,16 @@ const searchOptions = Object.keys(birdMaps);
         if (!communityPosts.some((item) => item.id === postId)) return;
         activeReaderPostId = postId;
         const phone = document.querySelector(".phone");
-        phone.scrollTop = 0;
         phone.classList.add("reader-mode");
         document.querySelector("[data-post-reader]").classList.add("show");
         renderPostReader(true);
       }
 
       function closePostReader() {
-        document.querySelector(".phone").classList.remove("reader-mode");
+        const phone = document.querySelector(".phone");
+        phone.classList.remove("reader-mode");
+        phone.classList.add("feed-mode");
         document.querySelector("[data-post-reader]").classList.remove("show");
-        document.querySelector(".phone").scrollTop = getHomeSnapTop();
       }
 
       function syncPostReaderIndex() {
@@ -11001,7 +11019,7 @@ const searchOptions = Object.keys(birdMaps);
         resetPhoneScroll();
         renderAchievementScreen("awards");
         document.querySelector(".phone").classList.add("profile-mode", "achievement-mode");
-        document.querySelector(".phone").classList.remove("map-mode", "star-mode", "gallery-mode", "shop-mode", "culture-mode", "settings-mode", "address-mode");
+        document.querySelector(".phone").classList.remove("feed-mode", "map-mode", "star-mode", "gallery-mode", "shop-mode", "culture-mode", "settings-mode", "address-mode");
       }
 
       function closeAchievements() {
@@ -11051,7 +11069,7 @@ const searchOptions = Object.keys(birdMaps);
         renderAddressBook();
         document.querySelector(".address-screen").classList.remove("editing");
         document.querySelector(".phone").classList.add("profile-mode", "address-mode");
-        document.querySelector(".phone").classList.remove("map-mode", "star-mode", "gallery-mode", "shop-mode", "culture-mode", "settings-mode", "achievement-mode");
+        document.querySelector(".phone").classList.remove("feed-mode", "map-mode", "star-mode", "gallery-mode", "shop-mode", "culture-mode", "settings-mode", "achievement-mode");
       }
 
       function closeAddressManager() {
@@ -11495,20 +11513,31 @@ const searchOptions = Object.keys(birdMaps);
         document.querySelector(".phone").scrollTop = 0;
       }
 
+      function showFeed(resetScroll = true) {
+        closeCommunityScreen();
+        closeDetailPanel();
+        closeMapNavigationSheet();
+        closeComposer();
+        const phone = document.querySelector(".phone");
+        phone.classList.add("feed-mode");
+        phone.classList.remove("map-mode", "star-mode", "gallery-mode", "shop-mode", "culture-mode", "profile-mode", "settings-mode", "address-mode", "achievement-mode");
+        if (resetScroll) document.querySelector(".home-feed").scrollTo({ top: 0, behavior: "auto" });
+      }
+
       function showMap() {
         closeCommunityScreen();
         closeDetailPanel();
         closeMapNavigationSheet();
         resetPhoneScroll();
         document.querySelector(".phone").classList.add("map-mode");
-        document.querySelector(".phone").classList.remove("star-mode", "gallery-mode", "shop-mode", "culture-mode", "profile-mode", "settings-mode", "address-mode", "achievement-mode");
+        document.querySelector(".phone").classList.remove("feed-mode", "star-mode", "gallery-mode", "shop-mode", "culture-mode", "profile-mode", "settings-mode", "address-mode", "achievement-mode");
       }
 
       function showStar() {
         closeCommunityScreen();
         resetPhoneScroll();
         document.querySelector(".phone").classList.add("star-mode");
-        document.querySelector(".phone").classList.remove("map-mode", "gallery-mode", "shop-mode", "culture-mode", "profile-mode", "settings-mode", "address-mode", "achievement-mode");
+        document.querySelector(".phone").classList.remove("feed-mode", "map-mode", "gallery-mode", "shop-mode", "culture-mode", "profile-mode", "settings-mode", "address-mode", "achievement-mode");
       }
 
       function showHome() {
@@ -11516,8 +11545,8 @@ const searchOptions = Object.keys(birdMaps);
         closeDetailPanel();
         closeMapNavigationSheet();
         closeComposer();
-        document.querySelector(".phone").classList.remove("map-mode", "star-mode", "gallery-mode", "shop-mode", "culture-mode", "profile-mode", "settings-mode", "address-mode", "achievement-mode");
-        document.querySelector(".phone").scrollTo({ top: 0, behavior: "smooth" });
+        document.querySelector(".phone").classList.remove("feed-mode", "map-mode", "star-mode", "gallery-mode", "shop-mode", "culture-mode", "profile-mode", "settings-mode", "address-mode", "achievement-mode");
+        document.querySelector(".home-feed").scrollTo({ top: 0, behavior: "auto" });
       }
 
       function showGallery() {
@@ -11526,7 +11555,7 @@ const searchOptions = Object.keys(birdMaps);
         renderGallery();
         bindToastTargets();
         document.querySelector(".phone").classList.add("gallery-mode");
-        document.querySelector(".phone").classList.remove("shop-mode", "culture-mode", "profile-mode", "settings-mode", "address-mode", "achievement-mode");
+        document.querySelector(".phone").classList.remove("feed-mode", "shop-mode", "culture-mode", "profile-mode", "settings-mode", "address-mode", "achievement-mode");
       }
 
       function showCulture() {
@@ -11534,7 +11563,7 @@ const searchOptions = Object.keys(birdMaps);
         resetPhoneScroll();
         renderCulture();
         document.querySelector(".phone").classList.add("culture-mode");
-        document.querySelector(".phone").classList.remove("map-mode", "star-mode", "gallery-mode", "shop-mode", "profile-mode", "settings-mode", "address-mode", "achievement-mode");
+        document.querySelector(".phone").classList.remove("feed-mode", "map-mode", "star-mode", "gallery-mode", "shop-mode", "profile-mode", "settings-mode", "address-mode", "achievement-mode");
       }
 
       function showShop(category) {
@@ -11542,7 +11571,7 @@ const searchOptions = Object.keys(birdMaps);
         resetPhoneScroll();
         renderShop(category);
         document.querySelector(".phone").classList.add("star-mode", "shop-mode");
-        document.querySelector(".phone").classList.remove("map-mode", "gallery-mode", "culture-mode", "profile-mode", "settings-mode", "address-mode", "achievement-mode");
+        document.querySelector(".phone").classList.remove("feed-mode", "map-mode", "gallery-mode", "culture-mode", "profile-mode", "settings-mode", "address-mode", "achievement-mode");
       }
 
       function showProfile() {
@@ -11550,7 +11579,7 @@ const searchOptions = Object.keys(birdMaps);
         resetPhoneScroll();
         renderProfile();
         document.querySelector(".phone").classList.add("profile-mode");
-        document.querySelector(".phone").classList.remove("map-mode", "star-mode", "gallery-mode", "shop-mode", "culture-mode", "settings-mode", "address-mode", "achievement-mode");
+        document.querySelector(".phone").classList.remove("feed-mode", "map-mode", "star-mode", "gallery-mode", "shop-mode", "culture-mode", "settings-mode", "address-mode", "achievement-mode");
         requestAnimationFrame(updateProfileScrollbar);
       }
 
@@ -11559,7 +11588,7 @@ const searchOptions = Object.keys(birdMaps);
         renderSettings();
         closeSettingEditor();
         document.querySelector(".phone").classList.add("profile-mode", "settings-mode");
-        document.querySelector(".phone").classList.remove("map-mode", "star-mode", "gallery-mode", "shop-mode", "culture-mode", "address-mode", "achievement-mode");
+        document.querySelector(".phone").classList.remove("feed-mode", "map-mode", "star-mode", "gallery-mode", "shop-mode", "culture-mode", "address-mode", "achievement-mode");
       }
 
       function closeSettings() {
@@ -12081,43 +12110,22 @@ const searchOptions = Object.keys(birdMaps);
       document.querySelector("[data-submit-post]").addEventListener("click", submitComposerPost);
       document.querySelector("[data-compose-title]").addEventListener("input", updateComposerPreview);
       document.querySelector("[data-compose-text]").addEventListener("input", updateComposerPreview);
-      function getHomeSnapTop() {
+      function canEnterFeedFromHome() {
         const phone = document.querySelector(".phone");
-        return Math.round(phone?.clientHeight || 760);
+        const blockedModes = ["feed-mode", "map-mode", "star-mode", "gallery-mode", "culture-mode", "profile-mode", "shop-mode", "reader-mode", "composer-mode", "community-mode", "community-chat-mode"];
+        return !blockedModes.some((mode) => phone.classList.contains(mode)) && !document.querySelector("[data-recognition-screen]").classList.contains("show");
       }
 
-      function syncPhoneScrollTop() {
-        const phone = document.querySelector(".phone");
-        phone?.style.setProperty("--phone-scroll-top", `${Math.round(phone.scrollTop || 0)}px`);
-      }
-
-      let homeSnapTimer = 0;
-      let lastPhoneScrollTop = 0;
-      document.querySelector(".phone").addEventListener("scroll", () => {
-        const phone = document.querySelector(".phone");
-        syncPhoneScrollTop();
-        if (
-          phone.classList.contains("map-mode") ||
-          phone.classList.contains("star-mode") ||
-          phone.classList.contains("gallery-mode") ||
-          phone.classList.contains("culture-mode") ||
-          phone.classList.contains("profile-mode") ||
-          phone.classList.contains("shop-mode") ||
-          phone.classList.contains("reader-mode") ||
-          phone.classList.contains("composer-mode") ||
-          phone.classList.contains("community-mode") ||
-          phone.classList.contains("community-chat-mode")
-        ) return;
-        const currentTop = phone.scrollTop;
-        const direction = currentTop > lastPhoneScrollTop ? "down" : "up";
-        lastPhoneScrollTop = currentTop;
-        window.clearTimeout(homeSnapTimer);
-        const homeSnapTop = getHomeSnapTop();
-        if (currentTop > 36 && currentTop < homeSnapTop - 22 && direction === "down") {
-          homeSnapTimer = window.setTimeout(() => {
-            phone.scrollTo({ top: homeSnapTop, behavior: "smooth" });
-          }, 70);
-        }
+      let homeTouchStartY = 0;
+      document.querySelector(".phone").addEventListener("wheel", (event) => {
+        if (canEnterFeedFromHome() && event.deltaY > 20) showFeed(true);
+      }, { passive: true });
+      document.querySelector(".phone").addEventListener("touchstart", (event) => {
+        homeTouchStartY = event.touches?.[0]?.clientY || 0;
+      }, { passive: true });
+      document.querySelector(".phone").addEventListener("touchend", (event) => {
+        const endY = event.changedTouches?.[0]?.clientY || homeTouchStartY;
+        if (canEnterFeedFromHome() && homeTouchStartY - endY > 48) showFeed(true);
       }, { passive: true });
       document.querySelector("[data-open-gallery]").addEventListener("click", showGallery);
       document.querySelector("[data-close-gallery]").addEventListener("click", showHome);
