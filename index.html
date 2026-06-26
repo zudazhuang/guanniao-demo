@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0" />
     <title>谷咕咕</title>
     <script>
-      window.__GUGUGU_LAYOUT_VERSION__ = "community-icons-v1-20260627";
+      window.__GUGUGU_LAYOUT_VERSION__ = "chat-fullscreen-v1-20260627";
 
       function setGuguguViewport() {
         const root = document.documentElement;
@@ -107,6 +107,10 @@
       }
 
       .phone.reader-mode .tabbar {
+        display: none;
+      }
+
+      .phone.community-chat-mode .tabbar {
         display: none;
       }
 
@@ -1485,7 +1489,7 @@
         top: 0;
         left: 50%;
         width: var(--app-width);
-        height: calc(var(--app-height) - var(--tabbar-height));
+        height: var(--app-height);
         display: none;
         transform: translateX(-50%);
         overflow: hidden;
@@ -2753,8 +2757,7 @@
       }
 
       .composer-mode .tabbar,
-      .community-mode .tabbar,
-      .community-chat-mode .tabbar {
+      .community-mode .tabbar {
         z-index: 38;
         display: grid;
       }
