@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0" />
     <title>谷咕咕</title>
     <script>
-      window.__GUGUGU_LAYOUT_VERSION__ = "feed-header-v1-20260627";
+      window.__GUGUGU_LAYOUT_VERSION__ = "community-polish-v1-20260627";
 
       function setGuguguViewport() {
         const root = document.documentElement;
@@ -900,7 +900,7 @@
         height: calc(var(--app-height) - var(--tabbar-height));
         display: none;
         transform: translateX(-50%);
-        background: #ffffff;
+        background: #f7f8f6;
         color: #1d2224;
         overflow: hidden;
       }
@@ -910,20 +910,21 @@
       }
 
       .community-topbar {
-        height: 66px;
+        height: 54px;
         display: grid;
-        grid-template-columns: 50px 1fr 50px 50px;
-        gap: 2px;
-        align-items: end;
-        padding: 0 14px 8px;
+        grid-template-columns: 40px 1fr 40px 40px;
+        gap: 4px;
+        align-items: center;
+        padding: 7px 16px 5px;
         background: #ffffff;
+        border-bottom: 1px solid rgba(24, 28, 32, 0.06);
       }
 
       .community-back,
       .community-search,
       .community-add {
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
         display: grid;
         place-items: center;
         border: 0;
@@ -945,10 +946,10 @@
         position: absolute;
         left: 50%;
         top: 50%;
-        width: 11px;
-        height: 11px;
-        border-left: 3px solid currentColor;
-        border-bottom: 3px solid currentColor;
+        width: 10px;
+        height: 10px;
+        border-left: 2.6px solid currentColor;
+        border-bottom: 2.6px solid currentColor;
         border-radius: 1px;
         transform: translate(-40%, -50%) rotate(45deg);
       }
@@ -964,30 +965,38 @@
 
       .community-search::before {
         content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
         width: 17px;
         height: 17px;
-        border: 2.2px solid currentColor;
+        border: 2.3px solid currentColor;
         border-radius: 50%;
+        transform: translate(-58%, -58%);
       }
 
       .community-search::after {
         content: "";
         position: absolute;
-        right: 4px;
-        bottom: 5px;
+        left: 50%;
+        top: 50%;
         width: 9px;
-        height: 2.2px;
+        height: 2.3px;
         border-radius: 999px;
         background: currentColor;
-        transform: rotate(45deg);
+        transform: translate(2px, 5px) rotate(45deg);
       }
 
       .community-add::before {
         content: "";
         position: absolute;
-        inset: 2px;
+        left: 50%;
+        top: 50%;
+        width: 31px;
+        height: 31px;
         border: 2.2px solid currentColor;
         border-radius: 50%;
+        transform: translate(-50%, -50%);
       }
 
       .community-add::after {
@@ -995,8 +1004,8 @@
         position: absolute;
         left: 50%;
         top: 50%;
-        width: 13px;
-        height: 13px;
+        width: 12px;
+        height: 12px;
         transform: translate(-50%, -50%);
         background:
           linear-gradient(currentColor, currentColor) center / 13px 2.2px no-repeat,
@@ -1008,9 +1017,9 @@
         grid-column: 1 / -1;
         grid-row: 1;
         color: #1d2224;
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 520;
-        line-height: 30px;
+        line-height: 1;
       }
 
       .community-search {
@@ -1026,27 +1035,27 @@
       .community-quick-row {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        padding: 11px 22px 26px;
+        padding: 12px 22px 18px;
       }
 
       .community-quick-item {
         display: grid;
         justify-items: center;
-        gap: 14px;
+        gap: 9px;
         color: #232628;
-        font-size: 15px;
+        font-size: 13px;
         font-weight: 600;
-        line-height: 22px;
+        line-height: 18px;
       }
 
       .community-quick-icon {
         position: relative;
-        width: 50px;
-        height: 50px;
+        width: 42px;
+        height: 42px;
         display: grid;
         place-items: center;
-        border-radius: 18px;
-        font-size: 25px;
+        border-radius: 15px;
+        font-size: 21px;
       }
 
       .community-quick-icon.like {
@@ -1063,9 +1072,9 @@
       .community-quick-icon.follow::before {
         content: "";
         position: absolute;
-        top: 11px;
-        width: 14px;
-        height: 14px;
+        top: 9px;
+        width: 12px;
+        height: 12px;
         border-radius: 50%;
         background: currentColor;
       }
@@ -1073,9 +1082,9 @@
       .community-quick-icon.follow::after {
         content: "";
         position: absolute;
-        bottom: 11px;
-        width: 29px;
-        height: 17px;
+        bottom: 9px;
+        width: 24px;
+        height: 14px;
         border-radius: 18px 18px 9px 9px;
         background: currentColor;
       }
@@ -1091,13 +1100,13 @@
         position: absolute;
         left: 50%;
         top: 50%;
-        width: 29px;
-        height: 25px;
+        width: 24px;
+        height: 21px;
         transform: translate(-50%, -50%);
         border-radius: 16px;
         background:
-          radial-gradient(circle at 11px 13px, #ffffff 0 3px, transparent 3.4px),
-          radial-gradient(circle at 21px 13px, #ffffff 0 3px, transparent 3.4px),
+          radial-gradient(circle at 9px 11px, #ffffff 0 2.4px, transparent 2.8px),
+          radial-gradient(circle at 17px 11px, #ffffff 0 2.4px, transparent 2.8px),
           currentColor;
         clip-path: polygon(0 0, 100% 0, 100% 74%, 62% 74%, 42% 100%, 42% 74%, 0 74%);
       }
@@ -1330,9 +1339,10 @@
       }
 
       .community-list {
-        height: calc(100% - 179px - 52px);
+        height: calc(100% - 134px);
         overflow-y: auto;
-        padding: 0 22px 22px;
+        padding: 0 22px 16px;
+        background: #f7f8f6;
         scrollbar-width: none;
       }
 
@@ -1342,16 +1352,16 @@
 
       .community-chat-card {
         display: grid;
-        grid-template-columns: 56px 1fr 46px;
-        gap: 12px;
+        grid-template-columns: 50px 1fr 40px;
+        gap: 10px;
         align-items: center;
-        padding: 13px 0;
+        padding: 11px 0;
       }
 
       .community-avatar-stack {
         position: relative;
-        width: 54px;
-        height: 54px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         overflow: hidden;
         background: #f0f2f4;
@@ -1359,8 +1369,8 @@
 
       .community-avatar-stack img {
         position: absolute;
-        width: 29px;
-        height: 29px;
+        width: 26px;
+        height: 26px;
         object-fit: cover;
       }
 
@@ -1398,7 +1408,7 @@
         display: block;
         overflow: hidden;
         color: #222426;
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 650;
         line-height: 1.2;
         white-space: nowrap;
@@ -1407,10 +1417,10 @@
 
       .community-chat-message {
         display: block;
-        margin-top: 6px;
+        margin-top: 5px;
         overflow: hidden;
         color: #8d9196;
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 500;
         line-height: 1.2;
         white-space: nowrap;
@@ -1422,29 +1432,29 @@
       }
 
       .community-chat-meta {
-        min-height: 54px;
+        min-height: 48px;
         display: flex;
         align-items: center;
         justify-content: flex-end;
         color: #9a9ea3;
-        font-size: 12px;
+        font-size: 11px;
       }
 
       .community-unread {
-        min-width: 19px;
-        height: 19px;
+        min-width: 17px;
+        height: 17px;
         display: grid;
         place-items: center;
         padding: 0 5px;
         border-radius: 999px;
         background: #ef3f51;
         color: #ffffff;
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 800;
       }
 
       .community-join {
-        height: 23px;
+        height: 21px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1452,7 +1462,7 @@
         border-radius: 999px;
         background: #66a832;
         color: #ffffff;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 850;
         line-height: 1;
       }
