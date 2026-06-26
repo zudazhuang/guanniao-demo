@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0" />
     <title>谷咕咕</title>
     <script>
-      window.__GUGUGU_LAYOUT_VERSION__ = "title-v1-20260627";
+      window.__GUGUGU_LAYOUT_VERSION__ = "post-scroll-v1-20260627";
 
       function setGuguguViewport() {
         const root = document.documentElement;
@@ -12080,7 +12080,18 @@ const searchOptions = Object.keys(birdMaps);
       let lastPhoneScrollTop = 0;
       document.querySelector(".phone").addEventListener("scroll", () => {
         const phone = document.querySelector(".phone");
-        if (phone.classList.contains("map-mode") || phone.classList.contains("star-mode") || phone.classList.contains("gallery-mode") || phone.classList.contains("culture-mode") || phone.classList.contains("profile-mode") || phone.classList.contains("shop-mode")) return;
+        if (
+          phone.classList.contains("map-mode") ||
+          phone.classList.contains("star-mode") ||
+          phone.classList.contains("gallery-mode") ||
+          phone.classList.contains("culture-mode") ||
+          phone.classList.contains("profile-mode") ||
+          phone.classList.contains("shop-mode") ||
+          phone.classList.contains("reader-mode") ||
+          phone.classList.contains("composer-mode") ||
+          phone.classList.contains("community-mode") ||
+          phone.classList.contains("community-chat-mode")
+        ) return;
         const currentTop = phone.scrollTop;
         const direction = currentTop > lastPhoneScrollTop ? "down" : "up";
         lastPhoneScrollTop = currentTop;
@@ -12089,10 +12100,6 @@ const searchOptions = Object.keys(birdMaps);
         if (currentTop > 36 && currentTop < homeSnapTop - 22 && direction === "down") {
           homeSnapTimer = window.setTimeout(() => {
             phone.scrollTo({ top: homeSnapTop, behavior: "smooth" });
-          }, 70);
-        } else if (currentTop > 36 && currentTop < 210 && direction === "up") {
-          homeSnapTimer = window.setTimeout(() => {
-            phone.scrollTo({ top: 0, behavior: "smooth" });
           }, 70);
         }
       }, { passive: true });
