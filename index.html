@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0" />
     <title>谷咕咕</title>
     <script>
-      window.__GUGUGU_LAYOUT_VERSION__ = "feed-tabs-type-v3-20260627";
+      window.__GUGUGU_LAYOUT_VERSION__ = "composer-search-v1-20260627";
 
       function setGuguguViewport() {
         const root = document.documentElement;
@@ -2616,10 +2616,9 @@
 
       .bird-selector-grid {
         display: grid;
-        gap: 9px;
+        gap: 8px;
       }
 
-      .bird-select,
       .bird-custom-input {
         width: 100%;
         height: 40px;
@@ -2634,12 +2633,64 @@
         box-shadow: inset 0 0 0 1px rgba(66, 94, 56, 0.1);
       }
 
-      .bird-select {
-        padding: 0 10px;
+      .bird-custom-input {
+        padding: 0 13px;
       }
 
-      .bird-custom-input {
-        padding: 0 11px;
+      .bird-suggestion-list {
+        display: grid;
+        gap: 7px;
+      }
+
+      .bird-suggestion {
+        width: 100%;
+        min-height: 48px;
+        display: grid;
+        grid-template-columns: 36px 1fr auto;
+        gap: 9px;
+        align-items: center;
+        padding: 6px 8px;
+        border: 0;
+        border-radius: 8px;
+        background: #eef3ea;
+        color: #17212b;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .bird-suggestion img {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .bird-suggestion strong,
+      .bird-suggestion span {
+        display: block;
+      }
+
+      .bird-suggestion strong {
+        font-size: 13px;
+        font-weight: 920;
+      }
+
+      .bird-suggestion span {
+        margin-top: 2px;
+        color: #6f7a68;
+        font-size: 10px;
+        font-weight: 800;
+      }
+
+      .bird-suggestion em {
+        padding: 4px 7px;
+        border-radius: 999px;
+        background: #ffffff;
+        color: #4f861d;
+        font-size: 10px;
+        font-style: normal;
+        font-weight: 900;
+        white-space: nowrap;
       }
 
       .select-chip {
@@ -7218,12 +7269,6 @@
           <span class="composer-title">发观鸟贴</span>
           <button class="composer-draft" type="button" data-save-draft>草稿</button>
         </header>
-        <div class="composer-progress">
-          <span class="composer-step active">图片</span>
-          <span class="composer-step active">内容</span>
-          <span class="composer-step active">地点</span>
-          <span class="composer-step active">预览</span>
-        </div>
         <section class="composer-section">
           <div class="composer-section-title"><strong>选择图片</strong><span>最多 3 张</span></div>
           <div class="media-source-row">
@@ -7246,17 +7291,21 @@
           </label>
         </section>
         <section class="composer-section">
-          <div class="composer-section-title"><strong>所在位置</strong><span>像微信/小红书发布定位</span></div>
+          <div class="composer-section-title"><strong>所在位置</strong><span>可选推荐，也可自己填</span></div>
           <div class="location-picker-card">
+            <label class="composer-field">
+              <span>输入位置</span>
+              <input class="composer-input" data-compose-location-custom placeholder="搜索或填写位置，如 北园池塘水杉旁" />
+            </label>
             <button class="location-current-row" type="button" data-location-current></button>
             <div class="location-list" data-location-list></div>
           </div>
         </section>
         <section class="composer-section">
-          <div class="composer-section-title"><strong>鸟种</strong><span>可下拉选择，也可自定义</span></div>
+          <div class="composer-section-title"><strong>鸟种</strong><span>输入后匹配南京图鉴</span></div>
           <div class="bird-selector-grid">
-            <select class="bird-select" data-compose-bird-select></select>
-            <input class="bird-custom-input" data-compose-bird-custom placeholder="没有找到？输入自定义鸟种，如 红耳鹎" />
+            <input class="bird-custom-input" data-compose-bird-custom placeholder="搜索鸟种，如 夜鹭、白头鹎、翠鸟" autocomplete="off" />
+            <div class="bird-suggestion-list" data-bird-suggestions></div>
           </div>
         </section>
         <section class="composer-section">
@@ -10113,11 +10162,58 @@ const searchOptions = Object.keys(birdMaps);
       }
 
       function getComposerLocation() {
-        return composerLocations.find((item) => item.name === composerState.location) || composerLocations[0];
+        return composerLocations.find((item) => item.name === composerState.location) || {
+          name: composerState.location || composerLocations[0].name,
+          address: composerState.location ? "自定义位置 · 发布时显示" : composerLocations[0].address,
+          distance: composerState.location ? "自定义" : composerLocations[0].distance,
+        };
       }
 
       function getComposerBird() {
         return composerState.customBird.trim() || composerState.bird;
+      }
+
+      function updateComposerLocationSurface() {
+        const currentLocation = getComposerLocation();
+        const locationCurrent = document.querySelector("[data-location-current]");
+        if (!locationCurrent) return;
+        locationCurrent.innerHTML = `
+          <div><i class="location-current-label">${composerLocations.some((item) => item.name === currentLocation.name) ? "当前定位" : "自定义位置"}</i><strong>${escapeHtml(currentLocation.name)}</strong><span>${escapeHtml(currentLocation.address)}</span></div><b>重新定位</b>
+        `;
+      }
+
+      function getComposerBirdSuggestions(query = "") {
+        const value = query.trim();
+        const normalized = value.toLowerCase();
+        const exactFirst = (bird) => bird.name === value;
+        const matched = birdLibrary.filter((bird) => {
+          if (!normalized) return ["已点亮", "待发现", "常见", "可遇"].includes(bird.status);
+          return [bird.name, bird.group, bird.status].some((text) => text.toLowerCase().includes(normalized));
+        });
+        return matched
+          .sort((a, b) => Number(exactFirst(b)) - Number(exactFirst(a)))
+          .slice(0, 6);
+      }
+
+      function updateComposerBirdSuggestions() {
+        const input = document.querySelector("[data-compose-bird-custom]");
+        const list = document.querySelector("[data-bird-suggestions]");
+        if (!input || !list) return;
+        const suggestions = getComposerBirdSuggestions(input.value);
+        list.innerHTML = suggestions.map((bird) => `
+          <button class="bird-suggestion" type="button" data-compose-bird-suggestion="${escapeHtml(bird.name)}">
+            <img src="${escapeHtml(bird.image)}" alt="" />
+            <span><strong>${escapeHtml(bird.name)}</strong><span>${escapeHtml(bird.group)} · ${escapeHtml(bird.status)}</span></span>
+            <em>选择</em>
+          </button>
+        `).join("");
+        list.querySelectorAll("[data-compose-bird-suggestion]").forEach((button) => {
+          button.addEventListener("click", () => {
+            composerState.customBird = button.dataset.composeBirdSuggestion;
+            composerState.bird = button.dataset.composeBirdSuggestion;
+            renderComposer();
+          });
+        });
       }
 
       function renderComposer() {
@@ -10132,23 +10228,19 @@ const searchOptions = Object.keys(birdMaps);
         document.querySelector("[data-media-picker-label]").textContent = uploadedCount
           ? `已接入 ${uploadedCount} 张图库上传照片，可与点亮图鉴照片混选`
           : "可选择已上传到点亮图鉴的照片，也可从本地图库上传";
-        const currentLocation = getComposerLocation();
-        document.querySelector("[data-location-current]").innerHTML = `
-          <div><i class="location-current-label">当前定位</i><strong>${escapeHtml(currentLocation.name)}</strong><span>${escapeHtml(currentLocation.address)}</span></div><b>重新定位</b>
-        `;
+        document.querySelector("[data-compose-location-custom]").value = composerState.location;
+        updateComposerLocationSurface();
         document.querySelector("[data-location-list]").innerHTML = composerLocations.map((location) => (
           `<button class="location-option ${location.name === composerState.location ? "active" : ""}" type="button" data-compose-location="${escapeHtml(location.name)}">
             <div><strong>${escapeHtml(location.name)}</strong><span>${escapeHtml(location.address)}</span></div><em>${escapeHtml(location.distance)}</em>
           </button>`
         )).join("");
-        document.querySelector("[data-compose-bird-select]").innerHTML = composerBirdTags.map((bird) => (
-          `<option value="${escapeHtml(bird)}" ${bird === composerState.bird ? "selected" : ""}>${escapeHtml(bird)}</option>`
-        )).join("");
-        document.querySelector("[data-compose-bird-custom]").value = composerState.customBird;
+        document.querySelector("[data-compose-bird-custom]").value = getComposerBird();
         document.querySelector("[data-publish-options]").innerHTML = composerOptions.map((option) => (
           `<button class="select-chip ${composerState.options.includes(option) ? "active" : ""}" type="button" data-compose-option="${escapeHtml(option)}">${escapeHtml(option)}</button>`
         )).join("");
         bindComposerControls();
+        updateComposerBirdSuggestions();
         updateComposerPreview();
       }
 
@@ -10213,15 +10305,20 @@ const searchOptions = Object.keys(birdMaps);
           composerState.location = composerLocations[0].name;
           renderComposer();
         });
-        document.querySelector("[data-compose-bird-select]").addEventListener("change", (event) => {
-          composerState.bird = event.target.value;
-          composerState.customBird = "";
-          renderComposer();
+        document.querySelector("[data-compose-location-custom]").addEventListener("input", (event) => {
+          composerState.location = event.target.value.trim() || composerLocations[0].name;
+          updateComposerLocationSurface();
+          updateComposerPreview();
         });
         document.querySelector("[data-compose-bird-custom]").addEventListener("input", (event) => {
           composerState.customBird = event.target.value;
+          if (birdLibrary.some((bird) => bird.name === event.target.value.trim())) {
+            composerState.bird = event.target.value.trim();
+          }
+          updateComposerBirdSuggestions();
           updateComposerPreview();
         });
+        document.querySelector("[data-compose-bird-custom]").addEventListener("focus", updateComposerBirdSuggestions);
         document.querySelectorAll("[data-compose-option]").forEach((button) => {
           button.addEventListener("click", () => {
             const option = button.dataset.composeOption;
