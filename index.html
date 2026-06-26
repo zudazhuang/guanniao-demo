@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0" />
     <title>谷咕咕</title>
     <script>
-      window.__GUGUGU_LAYOUT_VERSION__ = "post-scroll-v1-20260627";
+      window.__GUGUGU_LAYOUT_VERSION__ = "community-composer-nav-v1-20260627";
 
       function setGuguguViewport() {
         const root = document.documentElement;
@@ -53,6 +53,7 @@
         --preview-scale: 1;
         --preview-offset-x: 0px;
         --preview-visual-height: 800px;
+        --phone-scroll-top: 0px;
         --tabbar-height: 56px;
         --album-panel-height: 252px;
       }
@@ -110,15 +111,7 @@
         display: none;
       }
 
-      .phone.composer-mode .tabbar {
-        display: none;
-      }
-
       .phone.map-nav-open .tabbar {
-        display: none;
-      }
-
-      .phone.community-chat-mode .tabbar {
         display: none;
       }
 
@@ -519,20 +512,20 @@
         z-index: 7;
         top: 0;
         display: grid;
-        grid-template-columns: 34px 1fr 34px;
-        gap: 7px;
+        grid-template-columns: 54px 1fr 54px;
+        gap: 4px;
         align-items: center;
-        height: 60px;
+        height: 76px;
         margin: 0 -12px 9px;
-        padding: 18px 13px 7px;
+        padding: 14px 8px 8px;
         background: rgba(255, 255, 255, 0.96);
         border-bottom: 1px solid rgba(23, 33, 43, 0.08);
         backdrop-filter: blur(16px);
       }
 
       .feed-search-button {
-        width: 34px;
-        height: 34px;
+        width: 54px;
+        height: 54px;
         display: grid;
         place-items: center;
         border: 0;
@@ -564,12 +557,15 @@
       .feed-channel-tabs {
         display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 19px;
+        justify-content: space-between;
+        gap: 2px;
       }
 
       .feed-channel-tabs button {
         position: relative;
+        min-width: 50px;
+        min-height: 50px;
+        padding: 0 6px;
         border: 0;
         background: transparent;
         color: #8a8d91;
@@ -598,8 +594,10 @@
       }
 
       .feed-publish-button {
-        width: 34px;
-        height: 34px;
+        position: relative;
+        z-index: 8;
+        width: 54px;
+        height: 54px;
         display: grid;
         place-items: center;
         margin: 0;
@@ -876,10 +874,10 @@
       .community-screen {
         position: fixed;
         z-index: 24;
-        top: 0;
+        top: var(--phone-scroll-top);
         left: 50%;
         width: var(--app-width);
-        height: var(--app-height);
+        height: calc(var(--app-height) - var(--tabbar-height));
         display: none;
         transform: translateX(-50%);
         background: #ffffff;
@@ -892,20 +890,20 @@
       }
 
       .community-topbar {
-        height: 56px;
+        height: 66px;
         display: grid;
-        grid-template-columns: 30px 1fr 30px 30px;
-        gap: 11px;
+        grid-template-columns: 50px 1fr 50px 50px;
+        gap: 2px;
         align-items: end;
-        padding: 0 26px 13px;
+        padding: 0 14px 8px;
         background: #ffffff;
       }
 
       .community-back,
       .community-search,
       .community-add {
-        width: 28px;
-        height: 28px;
+        width: 50px;
+        height: 50px;
         display: grid;
         place-items: center;
         border: 0;
@@ -1255,11 +1253,11 @@
 
       .community-search-screen {
         position: fixed;
-        z-index: 36;
-        top: 0;
+        z-index: 26;
+        top: var(--phone-scroll-top);
         left: 50%;
         width: var(--app-width);
-        height: var(--app-height);
+        height: calc(var(--app-height) - var(--tabbar-height));
         display: none;
         transform: translateX(-50%);
         background: #ffffff;
@@ -1441,11 +1439,11 @@
 
       .community-chat-screen {
         position: fixed;
-        z-index: 34;
-        top: 0;
+        z-index: 26;
+        top: var(--phone-scroll-top);
         left: 50%;
         width: var(--app-width);
-        height: var(--app-height);
+        height: calc(var(--app-height) - var(--tabbar-height));
         display: none;
         transform: translateX(-50%);
         overflow: hidden;
@@ -2218,11 +2216,11 @@
 
       .post-composer {
         position: fixed;
-        z-index: 31;
-        top: 0;
+        z-index: 24;
+        top: var(--phone-scroll-top);
         left: 50%;
         width: var(--app-width);
-        height: var(--app-height);
+        height: calc(var(--app-height) - var(--tabbar-height));
         transform: translateX(-50%);
         display: none;
         overflow-y: auto;
@@ -2699,7 +2697,7 @@
         position: fixed;
         z-index: 30;
         left: 50%;
-        top: calc(var(--app-height) - var(--tabbar-height));
+        top: calc(var(--phone-scroll-top) + var(--app-height) - var(--tabbar-height));
         bottom: auto;
         width: var(--app-width);
         height: var(--tabbar-height);
@@ -2709,6 +2707,13 @@
         background: #000000;
         transform: translateX(-50%);
         transform-origin: bottom center;
+      }
+
+      .composer-mode .tabbar,
+      .community-mode .tabbar,
+      .community-chat-mode .tabbar {
+        z-index: 38;
+        display: grid;
       }
 
       .tab-item {
@@ -9929,11 +9934,15 @@ const searchOptions = Object.keys(birdMaps);
 
       function openCommunityScreen(focusCommunityId = "") {
         renderCommunityScreen(focusCommunityId);
+        syncPhoneScrollTop();
         document.querySelector("[data-community-screen]").classList.add("show");
+        document.querySelector(".phone").classList.add("community-mode");
       }
 
       function closeCommunityScreen() {
         document.querySelector("[data-community-screen]").classList.remove("show");
+        document.querySelector(".phone").classList.remove("community-mode");
+        closeCommunityChat();
         closeCommunityAddMenu();
         closeCommunitySearch();
       }
@@ -10201,6 +10210,7 @@ const searchOptions = Object.keys(birdMaps);
         event?.stopPropagation();
         renderComposer();
         const composer = document.querySelector("[data-post-composer]");
+        syncPhoneScrollTop();
         document.querySelector(".phone").classList.add("composer-mode");
         composer.classList.add("show");
         composer.scrollTo({ top: 0, behavior: "auto" });
@@ -12076,10 +12086,16 @@ const searchOptions = Object.keys(birdMaps);
         return Math.round(phone?.clientHeight || 760);
       }
 
+      function syncPhoneScrollTop() {
+        const phone = document.querySelector(".phone");
+        phone?.style.setProperty("--phone-scroll-top", `${Math.round(phone.scrollTop || 0)}px`);
+      }
+
       let homeSnapTimer = 0;
       let lastPhoneScrollTop = 0;
       document.querySelector(".phone").addEventListener("scroll", () => {
         const phone = document.querySelector(".phone");
+        syncPhoneScrollTop();
         if (
           phone.classList.contains("map-mode") ||
           phone.classList.contains("star-mode") ||
