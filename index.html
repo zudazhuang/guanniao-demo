@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0" />
     <title>谷咕咕</title>
     <script>
-      window.__GUGUGU_LAYOUT_VERSION__ = "chat-fullscreen-v1-20260627";
+      window.__GUGUGU_LAYOUT_VERSION__ = "feed-tabs-type-v1-20260627";
 
       function setGuguguViewport() {
         const root = document.documentElement;
@@ -582,27 +582,27 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 3px;
+        gap: 8px;
       }
 
       .feed-channel-tabs button {
         position: relative;
-        min-width: 34px;
+        min-width: 38px;
         min-height: 34px;
         padding: 0 3px;
         border: 0;
         background: transparent;
         color: #8a8d91;
-        font-size: 14px;
-        font-weight: 850;
+        font-size: 16px;
+        font-weight: 620;
         line-height: 1;
         cursor: pointer;
       }
 
       .feed-channel-tabs button.active {
         color: #1d2224;
-        font-size: 15px;
-        font-weight: 950;
+        font-size: 17px;
+        font-weight: 760;
       }
 
       .feed-channel-tabs button.active::after {
@@ -610,7 +610,7 @@
         position: absolute;
         left: 50%;
         bottom: -5px;
-        width: 22px;
+        width: 24px;
         height: 2.5px;
         transform: translateX(-50%);
         border-radius: 999px;
@@ -7204,7 +7204,7 @@
             <button type="button" data-feed-channel="关注">关注</button>
             <button class="active" type="button" data-feed-channel="发现">发现</button>
             <button type="button" data-feed-channel="同城">同城</button>
-            <button type="button" data-open-community>社群</button>
+            <button type="button" data-open-community>社区</button>
           </div>
           <button class="feed-publish-button" type="button" data-open-composer aria-label="发现鸟贴"><b>＋</b></button>
         </header>
@@ -9900,8 +9900,8 @@ const searchOptions = Object.keys(birdMaps);
       }
 
       function renderCommunityFeed() {
-        document.querySelector("[data-feed-channel-tabs]").innerHTML = ["关注", "发现", "同城", "社群"].map((channel) => (
-          channel === "社群"
+        document.querySelector("[data-feed-channel-tabs]").innerHTML = ["关注", "发现", "同城", "社区"].map((channel) => (
+          channel === "社区"
             ? `<button type="button" data-open-community>${channel}</button>`
             : `<button class="${channel === activeFeedChannel ? "active" : ""}" type="button" data-feed-channel="${channel}">${channel}</button>`
         )).join("");
