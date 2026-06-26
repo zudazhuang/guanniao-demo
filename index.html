@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0" />
     <title>谷咕咕</title>
     <script>
-      window.__GUGUGU_LAYOUT_VERSION__ = "community-polish-v1-20260627";
+      window.__GUGUGU_LAYOUT_VERSION__ = "composer-polish-v2-20260627";
 
       function setGuguguViewport() {
         const root = document.documentElement;
@@ -532,20 +532,20 @@
         z-index: 7;
         top: 0;
         display: grid;
-        grid-template-columns: 44px 1fr 44px;
-        gap: 6px;
+        grid-template-columns: 34px 1fr 34px;
+        gap: 4px;
         align-items: center;
-        height: 58px;
-        margin: 0 -12px 9px;
-        padding: 7px 10px 5px;
+        height: 46px;
+        margin: 0 -12px 7px;
+        padding: 4px 12px 3px;
         background: rgba(255, 255, 255, 0.96);
         border-bottom: 1px solid rgba(23, 33, 43, 0.08);
         backdrop-filter: blur(16px);
       }
 
       .feed-search-button {
-        width: 44px;
-        height: 44px;
+        width: 34px;
+        height: 34px;
         display: grid;
         place-items: center;
         border: 0;
@@ -556,19 +556,19 @@
 
       .feed-search-icon {
         position: relative;
-        width: 18px;
-        height: 18px;
-        border: 3px solid #1d2224;
+        width: 15px;
+        height: 15px;
+        border: 2.6px solid #1d2224;
         border-radius: 50%;
       }
 
       .feed-search-icon::after {
         content: "";
         position: absolute;
-        right: -7px;
+        right: -6px;
         bottom: -5px;
-        width: 9px;
-        height: 3px;
+        width: 8px;
+        height: 2.6px;
         border-radius: 999px;
         background: #1d2224;
         transform: rotate(-45deg);
@@ -578,13 +578,13 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
+        gap: 3px;
       }
 
       .feed-channel-tabs button {
         position: relative;
-        min-width: 40px;
-        min-height: 44px;
+        min-width: 34px;
+        min-height: 34px;
         padding: 0 3px;
         border: 0;
         background: transparent;
@@ -597,7 +597,7 @@
 
       .feed-channel-tabs button.active {
         color: #1d2224;
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 950;
       }
 
@@ -605,9 +605,9 @@
         content: "";
         position: absolute;
         left: 50%;
-        bottom: -6px;
-        width: 28px;
-        height: 3px;
+        bottom: -5px;
+        width: 22px;
+        height: 2.5px;
         transform: translateX(-50%);
         border-radius: 999px;
         background: #66a832;
@@ -616,8 +616,8 @@
       .feed-publish-button {
         position: relative;
         z-index: 8;
-        width: 42px;
-        height: 42px;
+        width: 30px;
+        height: 30px;
         display: grid;
         place-items: center;
         margin: 0;
@@ -627,12 +627,12 @@
         background: #66a832;
         color: #ffffff;
         font-weight: 950;
-        box-shadow: 0 7px 14px rgba(102, 168, 50, 0.24);
+        box-shadow: 0 4px 9px rgba(102, 168, 50, 0.2);
         cursor: pointer;
       }
 
       .feed-publish-button b {
-        font-size: 23px;
+        font-size: 18px;
         line-height: 1;
       }
 
@@ -2272,10 +2272,10 @@
         z-index: 2;
         top: 0;
         display: grid;
-        grid-template-columns: 48px 1fr 64px;
+        grid-template-columns: 44px 1fr 52px;
         align-items: center;
-        min-height: 58px;
-        padding: 8px 14px;
+        min-height: 44px;
+        padding: 4px 14px;
         background: rgba(251, 252, 246, 0.96);
         backdrop-filter: blur(12px);
       }
@@ -2285,7 +2285,7 @@
         border: 0;
         background: transparent;
         color: #17212b;
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 900;
         cursor: pointer;
       }
@@ -2297,25 +2297,26 @@
       .composer-title {
         color: #66a832;
         text-align: center;
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 950;
       }
 
       .composer-progress {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 6px;
-        padding: 0 14px 12px;
+        grid-template-columns: repeat(4, minmax(0, 52px));
+        justify-content: center;
+        gap: 4px;
+        padding: 0 14px 10px;
       }
 
       .composer-step {
-        height: 28px;
+        height: 22px;
         display: grid;
         place-items: center;
         border-radius: 999px;
         background: #eef3ea;
         color: #6d776b;
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 900;
       }
 
