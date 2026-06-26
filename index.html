@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0" />
     <title>点亮图鉴中间页预览</title>
     <script>
-      window.__GUGUGU_LAYOUT_VERSION__ = "layout-v4-20260627";
+      window.__GUGUGU_LAYOUT_VERSION__ = "recognition-v1-20260627";
 
       function setGuguguViewport() {
         const root = document.documentElement;
@@ -8386,6 +8386,43 @@
       let regionPanelOpen = false;
       let recognitionPhoto = "./assets/birds/real-night-heron.jpg";
       let recognitionSource = "从图库选择";
+      let recognizedBirdName = "夜鹭";
+      let recognitionRunId = 0;
+      let recognitionModelPromise = null;
+
+      const tfScriptSources = [
+        "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js",
+        "https://unpkg.com/@tensorflow/tfjs@4.22.0/dist/tf.min.js",
+      ];
+      const mobilenetScriptSources = [
+        "https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js",
+        "https://unpkg.com/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js",
+      ];
+
+      const recognitionRules = [
+        { terms: ["bulbul"], birds: ["白头鹎", "领雀嘴鹎", "黄臀鹎"], weight: 1.18 },
+        { terms: ["blackbird"], birds: ["乌鸫", "鹊鸲", "白腹鸫"], weight: 1.2 },
+        { terms: ["thrush", "robin"], birds: ["乌鸫", "白腹鸫", "斑鸫", "北红尾鸲"], weight: 1.08 },
+        { terms: ["heron", "egret", "bittern", "crane", "stork"], birds: ["白鹭", "池鹭", "夜鹭", "苍鹭", "大白鹭", "牛背鹭"], weight: 1.24 },
+        { terms: ["cormorant"], birds: ["普通鸬鹚"], weight: 1.25 },
+        { terms: ["kingfisher", "bee eater", "jacamar"], birds: ["普通翠鸟"], weight: 1.3 },
+        { terms: ["moorhen", "coot", "water ouzel"], birds: ["黑水鸡", "白骨顶", "白胸苦恶鸟"], weight: 1.15 },
+        { terms: ["drake", "duck", "goose", "swan", "merganser"], birds: ["绿头鸭", "斑嘴鸭", "绿翅鸭", "赤麻鸭", "鸳鸯", "小鸊鷉"], weight: 1.18 },
+        { terms: ["dove", "pigeon"], birds: ["珠颈斑鸠", "山斑鸠"], weight: 1.2 },
+        { terms: ["magpie"], birds: ["喜鹊", "灰喜鹊", "红嘴蓝鹊"], weight: 1.25 },
+        { terms: ["jay"], birds: ["松鸦", "灰喜鹊", "灰树鹊"], weight: 1.12 },
+        { terms: ["sparrow"], birds: ["树麻雀", "白腰文鸟", "斑文鸟"], weight: 1.18 },
+        { terms: ["finch", "brambling", "goldfinch", "junco", "bunting"], birds: ["金翅雀", "燕雀", "灰头鹀", "小鹀"], weight: 1.1 },
+        { terms: ["chickadee", "titmouse"], birds: ["大山雀", "黄腹山雀", "红头长尾山雀"], weight: 1.12 },
+        { terms: ["swallow"], birds: ["家燕"], weight: 1.25 },
+        { terms: ["shrike"], birds: ["棕背伯劳", "红尾伯劳", "牛头伯劳"], weight: 1.2 },
+        { terms: ["woodpecker"], birds: ["大斑啄木鸟", "灰头绿啄木鸟", "星头啄木鸟"], weight: 1.2 },
+        { terms: ["kite", "hawk", "eagle", "falcon", "kestrel", "vulture", "owl"], birds: ["红隼", "凤头鹰", "黑鸢", "普通鵟"], weight: 1.06 },
+        { terms: ["sandpiper", "plover", "avocet", "lapwing", "turnstone"], birds: ["矶鹬", "青脚鹬", "林鹬", "金眶鸻", "反嘴鹬"], weight: 1.08 },
+        { terms: ["warbler"], birds: ["黄眉柳莺", "极北柳莺", "黄腰柳莺"], weight: 1.05 },
+        { terms: ["wagtail"], birds: ["白鹡鸰", "灰鹡鸰", "黄鹡鸰"], weight: 1.2 },
+        { terms: ["partridge", "quail", "pheasant", "peacock"], birds: ["戴胜", "小云雀", "凤头麦鸡"], weight: 0.82 },
+      ];
 
       const albums = [
         { title: "城市常见", note: "城市常见", birds: birdLibrary.slice(0, 6).map((bird, index) => ({ ...bird, unlocked: index < 2, featured: index === 2, date: index < 2 ? `5/2${index + 1} 拍到` : "" })) },
@@ -11627,26 +11664,184 @@ const searchOptions = Object.keys(birdMaps);
         input.click();
       }
 
-      function openRecognitionResult(image, sourceLabel) {
-        recognitionPhoto = image;
-        document.querySelector("[data-recognition-source]").textContent = sourceLabel;
-        document.querySelector("[data-recognition-image]").src = image;
-        document.querySelector("[data-recognition-bird]").textContent = "夜鹭";
-        document.querySelector("[data-recognition-meta]").textContent = "南京常见 · 已点亮 · 北园池塘附近可见";
-        document.querySelector("[data-recognition-confidence]").textContent = "86%";
-        const candidates = [
-          { name: "夜鹭", meta: "黑背红眼 · 黄昏水边常见", score: "86%", image: "./assets/birds/real-night-heron.jpg" },
-          { name: "池鹭", meta: "浅水湿地 · 体态相近", score: "63%", image: "./assets/birds/real-chinese-pond-heron.jpg" },
-          { name: "白鹭", meta: "长颈白羽 · 需排除", score: "41%", image: "./assets/birds/real-little-egret.jpg" },
+      function loadScriptFromSources(sources, globalName) {
+        if (window[globalName]) return Promise.resolve(window[globalName]);
+        return sources.reduce((promise, src) => (
+          promise.catch(() => new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src = src;
+            script.async = true;
+            script.onload = () => window[globalName] ? resolve(window[globalName]) : reject(new Error(`${globalName} unavailable`));
+            script.onerror = reject;
+            document.head.appendChild(script);
+          }))
+        ), Promise.reject());
+      }
+
+      async function getRecognitionModel() {
+        if (!recognitionModelPromise) {
+          recognitionModelPromise = (async () => {
+            await loadScriptFromSources(tfScriptSources, "tf");
+            await window.tf.ready();
+            await loadScriptFromSources(mobilenetScriptSources, "mobilenet");
+            return window.mobilenet.load({ version: 2, alpha: 1.0 });
+          })().catch((error) => {
+            recognitionModelPromise = null;
+            throw error;
+          });
+        }
+        return recognitionModelPromise;
+      }
+
+      function setRecognitionConfidence(value) {
+        const confidence = clamp(Math.round(value), 0, 100);
+        const ring = document.querySelector(".confidence-ring");
+        document.querySelector("[data-recognition-confidence]").textContent = `${confidence}%`;
+        ring.style.background = `conic-gradient(#66a832 0 ${confidence}%, #e6eedf ${confidence}% 100%)`;
+      }
+
+      function getBirdProfile(name) {
+        return starBirds.find((bird) => bird.name === name) || birdLibrary.find((bird) => bird.name === name);
+      }
+
+      function getPredictionHint(label) {
+        const value = String(label || "").toLowerCase();
+        const hints = [
+          { terms: ["egret", "heron", "bittern"], text: "鹭科水鸟" },
+          { terms: ["duck", "drake", "goose", "swan"], text: "鸭类水鸟" },
+          { terms: ["kingfisher", "bee eater", "jacamar"], text: "翠鸟近似特征" },
+          { terms: ["magpie", "jay"], text: "鸦科长尾鸟" },
+          { terms: ["sparrow", "finch", "bunting"], text: "小型鸣禽" },
+          { terms: ["dove", "pigeon"], text: "鸠鸽类" },
+          { terms: ["woodpecker"], text: "啄木鸟特征" },
+          { terms: ["swallow"], text: "燕类飞鸟" },
+          { terms: ["hawk", "kite", "falcon", "eagle", "kestrel"], text: "猛禽轮廓" },
+          { terms: ["sandpiper", "plover", "lapwing"], text: "鸻鹬类水鸟" },
+          { terms: ["warbler", "titmouse", "chickadee"], text: "林间小鸟" },
+          { terms: ["bulbul"], text: "鹎类特征" },
+          { terms: ["blackbird", "thrush", "robin"], text: "鸫类特征" },
         ];
+        return hints.find((hint) => hint.terms.some((term) => value.includes(term)))?.text || "鸟类特征";
+      }
+
+      function makeRecognitionMeta(name, predictionLabel, confidence) {
+        const profile = getBirdProfile(name);
+        const group = profile?.group || profile?.location?.split(" · ")?.pop() || "南京常见鸟种";
+        const status = profile?.status || profile?.badge || "候选";
+        const label = predictionLabel ? `模型线索：${getPredictionHint(predictionLabel)}` : "端上模型识别";
+        return `${group} · ${status} · ${label} · ${confidence}%`;
+      }
+
+      function buildRecognitionCandidates(predictions) {
+        const scores = new Map();
+        const labelsByBird = new Map();
+        predictions.forEach((prediction, predictionIndex) => {
+          const label = String(prediction.className || "").toLowerCase();
+          recognitionRules.forEach((rule) => {
+            if (!rule.terms.some((term) => label.includes(term))) return;
+            rule.birds.forEach((name, birdIndex) => {
+              const profile = getBirdProfile(name);
+              if (!profile) return;
+              const score = (prediction.probability || 0) * rule.weight * (1 - predictionIndex * 0.055) * (1 - birdIndex * 0.08);
+              scores.set(name, (scores.get(name) || 0) + score);
+              if (!labelsByBird.has(name)) labelsByBird.set(name, prediction.className);
+            });
+          });
+        });
+
+        return [...scores.entries()]
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 3)
+          .map(([name, score], index) => {
+            const profile = getBirdProfile(name);
+            const confidence = clamp(Math.round(30 + score * 78 - index * 6), 18, 96);
+            return {
+              name,
+              meta: makeRecognitionMeta(name, labelsByBird.get(name), confidence),
+              score: `${confidence}%`,
+              confidence,
+              image: profile?.image || "./assets/gugugu-icon.png",
+            };
+          });
+      }
+
+      function renderRecognitionCandidates(candidates) {
         document.querySelector("[data-recognition-candidates]").innerHTML = candidates.map((bird) => `
           <article class="recognition-result-card">
-            <img src="${bird.image}" alt="${bird.name}" />
-            <div><strong>${bird.name}</strong><span>${bird.meta}</span></div>
-            <b>${bird.score}</b>
+            <img src="${escapeHtml(bird.image)}" alt="${escapeHtml(bird.name)}" />
+            <div><strong>${escapeHtml(bird.name)}</strong><span>${escapeHtml(bird.meta)}</span></div>
+            <b>${escapeHtml(bird.score)}</b>
           </article>
         `).join("");
+      }
+
+      async function decodeRecognitionImage(image) {
+        const img = new Image();
+        img.decoding = "async";
+        img.src = image;
+        if (img.decode) {
+          await img.decode();
+        } else {
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
+          });
+        }
+        return img;
+      }
+
+      function renderRecognitionFallback(message) {
+        recognizedBirdName = "";
+        document.querySelector("[data-recognition-bird]").textContent = "未确认鸟种";
+        document.querySelector("[data-recognition-meta]").textContent = message;
+        setRecognitionConfidence(0);
+        renderRecognitionCandidates([{
+          name: "重新拍摄建议",
+          meta: "让鸟占画面中央，避免背光、过远或被树叶遮挡。",
+          score: "待识别",
+          image: recognitionPhoto,
+        }]);
+      }
+
+      async function openRecognitionResult(image, sourceLabel) {
+        const runId = ++recognitionRunId;
+        recognitionPhoto = image;
+        recognizedBirdName = "";
+        document.querySelector("[data-recognition-source]").textContent = sourceLabel;
+        document.querySelector("[data-recognition-image]").src = image;
+        document.querySelector("[data-recognition-bird]").textContent = "识别中";
+        document.querySelector("[data-recognition-meta]").textContent = "正在加载端上视觉模型";
+        setRecognitionConfidence(0);
+        renderRecognitionCandidates([{
+          name: "模型识别中",
+          meta: "第一次使用会稍慢，照片只在本机浏览器内分析。",
+          score: "...",
+          image,
+        }]);
         document.querySelector("[data-recognition-screen]").classList.add("show");
+
+        try {
+          const [model, img] = await Promise.all([getRecognitionModel(), decodeRecognitionImage(image)]);
+          if (runId !== recognitionRunId) return;
+          const predictions = await model.classify(img, 10);
+          if (runId !== recognitionRunId) return;
+          const candidates = buildRecognitionCandidates(predictions);
+          if (!candidates.length) {
+            const labels = predictions.slice(0, 2).map((item) => item.className).join(" / ");
+            renderRecognitionFallback(labels ? `模型没有检测到明确鸟类特征 · ${labels}` : "模型没有检测到明确鸟类特征");
+            return;
+          }
+          const top = candidates[0];
+          recognizedBirdName = top.name;
+          document.querySelector("[data-recognition-bird]").textContent = top.name;
+          document.querySelector("[data-recognition-meta]").textContent = top.meta;
+          setRecognitionConfidence(top.confidence);
+          renderRecognitionCandidates(candidates);
+        } catch (error) {
+          if (runId !== recognitionRunId) return;
+          console.error(error);
+          renderRecognitionFallback("识别模型加载失败，请检查网络后重试");
+        }
       }
 
       function handleRecognitionFile(event) {
@@ -11985,8 +12180,13 @@ const searchOptions = Object.keys(birdMaps);
         showGallery();
       });
       document.querySelector("[data-recognition-map]").addEventListener("click", () => {
+        if (!recognizedBirdName) {
+          showToast("还没有明确识别结果");
+          return;
+        }
         closeRecognitionResult();
-        activeBird = "夜鹭";
+        activeBird = resolveBirdKey(recognizedBirdName);
+        renderMap();
         showMap();
       });
       document.querySelector("[data-recognition-compose]").addEventListener("click", useRecognitionPhotoForPost);
