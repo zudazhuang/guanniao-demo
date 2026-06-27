@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0" />
     <title>谷咕咕</title>
     <script>
-      window.__GUGUGU_LAYOUT_VERSION__ = "map-60-search-birdguard-v1-20260627";
+      window.__GUGUGU_LAYOUT_VERSION__ = "map-search-keyboard-v1-20260627";
 
       function setGuguguViewport() {
         const root = document.documentElement;
@@ -3299,6 +3299,12 @@
         min-height: 0;
         overflow-y: auto;
         overscroll-behavior: contain;
+      }
+
+      .map-panel.searching .route-list-head,
+      .map-panel.searching .route-list,
+      .map-panel.searching .data-note {
+        display: none;
       }
 
       .star-screen {
@@ -11564,6 +11570,12 @@ const searchOptions = Object.keys(birdMaps);
         return [...exact, ...starts, ...contains].slice(0, 12);
       }
 
+      function setMapSearchActive(isActive) {
+        document.querySelector(".map-panel")?.classList.toggle("searching", isActive);
+        document.querySelector("[data-map-search-suggestions]")?.classList.toggle("show", isActive);
+        document.querySelector("[data-search-options]")?.classList.toggle("suggestions-open", isActive);
+      }
+
       function renderMapSearchOptions(value = "") {
         const keyword = String(value || "").trim();
         const matches = getMapSearchMatches(keyword);
@@ -11576,9 +11588,8 @@ const searchOptions = Object.keys(birdMaps);
           const spotCount = birdMaps[bird]?.spots?.length || 0;
           return `<button class="map-search-suggestion" type="button" data-search-bird="${escapeHtml(bird)}"><strong>${escapeHtml(bird)}</strong><span>${spotCount} 个推荐点</span></button>`;
         }).join("") || fallback.map((text) => `<button class="map-search-suggestion" type="button" disabled><strong>${escapeHtml(text)}</strong><span>试试 白鹭 / 夜鹭</span></button>`).join("");
-        const shouldShowSuggestions = Boolean(keyword || document.activeElement === document.querySelector("[data-map-search]"));
-        suggestionPanel.classList.toggle("show", shouldShowSuggestions);
-        document.querySelector("[data-search-options]").classList.toggle("suggestions-open", shouldShowSuggestions);
+        const shouldShowSuggestions = document.activeElement === document.querySelector("[data-map-search]");
+        setMapSearchActive(shouldShowSuggestions);
         document.querySelectorAll("[data-search-bird]").forEach((button) => {
           button.addEventListener("click", () => {
             activeBird = button.dataset.searchBird;
@@ -11586,8 +11597,7 @@ const searchOptions = Object.keys(birdMaps);
             activeMapZoomOffset = defaultMapZoomOffset;
             activeMapPan = { x: 0, y: 0 };
             document.querySelector("[data-map-search]").value = activeBird;
-            document.querySelector("[data-map-search-suggestions]").classList.remove("show");
-            document.querySelector("[data-search-options]").classList.remove("suggestions-open");
+            setMapSearchActive(false);
             renderMap();
           });
         });
@@ -11733,8 +11743,7 @@ const searchOptions = Object.keys(birdMaps);
         activeRouteRank = 1;
         activeMapZoomOffset = defaultMapZoomOffset;
         activeMapPan = { x: 0, y: 0 };
-        document.querySelector("[data-map-search-suggestions]").classList.remove("show");
-        document.querySelector("[data-search-options]").classList.remove("suggestions-open");
+        setMapSearchActive(false);
         renderMap();
       }
 
@@ -12757,8 +12766,7 @@ const searchOptions = Object.keys(birdMaps);
       });
       document.querySelector("[data-map-search]").addEventListener("blur", () => {
         window.setTimeout(() => {
-          document.querySelector("[data-map-search-suggestions]").classList.remove("show");
-          document.querySelector("[data-search-options]").classList.remove("suggestions-open");
+          setMapSearchActive(false);
         }, 160);
       });
       document.querySelector("[data-map-search]").addEventListener("keydown", (event) => {
@@ -12766,8 +12774,7 @@ const searchOptions = Object.keys(birdMaps);
           submitMapSearch();
         }
         if (event.key === "Escape") {
-          document.querySelector("[data-map-search-suggestions]").classList.remove("show");
-          document.querySelector("[data-search-options]").classList.remove("suggestions-open");
+          setMapSearchActive(false);
         }
       });
       document.querySelector(".route-list").addEventListener("scroll", () => {
