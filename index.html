@@ -8,7 +8,8 @@
     <meta http-equiv="Expires" content="0" />
     <title>谷咕咕</title>
     <script>
-      window.__GUGUGU_LAYOUT_VERSION__ = "map-search-keyboard-v1-20260627";
+      window.__GUGUGU_LAYOUT_VERSION__ = "gemini-recognition-proxy-v1-20260627";
+      window.__GUGUGU_RECOGNITION_API__ = window.__GUGUGU_RECOGNITION_API__ || "";
 
       function setGuguguViewport() {
         const root = document.documentElement;
@@ -12289,6 +12290,93 @@ const searchOptions = Object.keys(birdMaps);
         }]);
       }
 
+      function getRecognitionApiCandidates() {
+        const configured = [
+          window.__GUGUGU_RECOGNITION_API__,
+          localStorage.getItem("gugugu_recognition_api"),
+        ].filter(Boolean);
+        const origin = window.location.origin;
+        const canUseSameOrigin = origin.startsWith("http") && !window.location.hostname.endsWith("github.io");
+        const sameOriginEndpoint = canUseSameOrigin ? `${origin}/api/recognize` : "";
+        return [...new Set([...configured, sameOriginEndpoint].filter(Boolean))];
+      }
+
+      async function prepareRecognitionImagePayload(image) {
+        const img = await decodeRecognitionImage(image);
+        const maxSide = 1280;
+        const scale = Math.min(1, maxSide / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
+        const width = Math.max(1, Math.round((img.naturalWidth || img.width) * scale));
+        const height = Math.max(1, Math.round((img.naturalHeight || img.height) * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext("2d");
+        context.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.84);
+        return {
+          mimeType: "image/jpeg",
+          imageBase64: dataUrl.split(",")[1] || "",
+          width,
+          height,
+        };
+      }
+
+      function normalizeRemoteRecognitionCandidate(candidate, index) {
+        const name = resolveBirdKey(candidate.name || candidate.bird || "");
+        const profile = getBirdProfile(name);
+        const confidence = clamp(Math.round(Number(candidate.confidence) || Number(candidate.score) || (88 - index * 7)), 1, 99);
+        const reason = candidate.reason || candidate.evidence || "Gemini 视觉识别";
+        return {
+          name,
+          meta: makeRecognitionMeta(name, reason, confidence),
+          score: `${confidence}%`,
+          confidence,
+          image: profile?.image || "./assets/gugugu-icon.png",
+        };
+      }
+
+      async function recognizeBirdWithBackend(image, fileName = "") {
+        const endpoints = getRecognitionApiCandidates();
+        if (!endpoints.length) return null;
+        const payload = await prepareRecognitionImagePayload(image);
+        const knownBirds = [...new Set(birdLibrary.map((bird) => bird.name).concat(starBirds.map((bird) => bird.name)))];
+        const body = JSON.stringify({
+          ...payload,
+          fileName,
+          locale: "zh-CN",
+          locationHint: "南京及周边常见鸟类",
+          knownBirds,
+        });
+        for (const endpoint of endpoints) {
+          try {
+            const controller = new AbortController();
+            const timeout = window.setTimeout(() => controller.abort(), 12000);
+            const response = await fetch(endpoint, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body,
+              signal: controller.signal,
+            });
+            window.clearTimeout(timeout);
+            if (!response.ok) continue;
+            const result = await response.json();
+            if (result && result.isBird === false) {
+              return { isBird: false, message: result.message || "Gemini 没有检测到明确鸟类主体" };
+            }
+            const candidates = (result.candidates || [])
+              .map(normalizeRemoteRecognitionCandidate)
+              .filter((candidate, index, list) => candidate.name && list.findIndex((item) => item.name === candidate.name) === index)
+              .slice(0, 3);
+            if (candidates.length) {
+              return { isBird: true, candidates, provider: result.provider || "Gemini" };
+            }
+          } catch (error) {
+            console.warn("backend recognition unavailable", endpoint, error);
+          }
+        }
+        return null;
+      }
+
       async function openRecognitionResult(image, sourceLabel, fileName = "") {
         const runId = ++recognitionRunId;
         recognitionPhoto = image;
@@ -12296,17 +12384,33 @@ const searchOptions = Object.keys(birdMaps);
         document.querySelector("[data-recognition-source]").textContent = sourceLabel;
         document.querySelector("[data-recognition-image]").src = image;
         document.querySelector("[data-recognition-bird]").textContent = "识别中";
-        document.querySelector("[data-recognition-meta]").textContent = "正在加载端上视觉模型和南京图鉴";
+        document.querySelector("[data-recognition-meta]").textContent = "正在调用后端 AI 识别，失败后自动切回端上模型";
         setRecognitionConfidence(0);
         renderRecognitionCandidates([{
-          name: "模型识别中",
-          meta: "第一次使用会稍慢，照片只在本机浏览器内分析。",
+          name: "AI 识别中",
+          meta: "优先调用后端 Gemini，不可用时自动使用本机模型。",
           score: "...",
           image,
         }]);
         document.querySelector("[data-recognition-screen]").classList.add("show");
 
         try {
+          const remoteResult = await recognizeBirdWithBackend(image, fileName);
+          if (runId !== recognitionRunId) return;
+          if (remoteResult?.isBird === false) {
+            renderRecognitionFallback(remoteResult.message);
+            return;
+          }
+          if (remoteResult?.candidates?.length) {
+            const top = remoteResult.candidates[0];
+            recognizedBirdName = top.name;
+            document.querySelector("[data-recognition-bird]").textContent = top.name;
+            document.querySelector("[data-recognition-meta]").textContent = `${top.meta} · 后端AI`;
+            setRecognitionConfidence(top.confidence);
+            renderRecognitionCandidates(remoteResult.candidates);
+            return;
+          }
+          document.querySelector("[data-recognition-meta]").textContent = "后端暂不可用，正在切回端上视觉模型";
           const [model, img] = await Promise.all([getRecognitionModel(), decodeRecognitionImage(image)]);
           if (runId !== recognitionRunId) return;
           const predictions = await model.classify(img, 10);
