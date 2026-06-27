@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0" />
     <title>谷咕咕</title>
     <script>
-      window.__GUGUGU_LAYOUT_VERSION__ = "star-calls-species-v1-20260627";
+      window.__GUGUGU_LAYOUT_VERSION__ = "map-60-search-birdguard-v1-20260627";
 
       function setGuguguViewport() {
         const root = document.documentElement;
@@ -2947,6 +2947,8 @@
       }
 
       .map-search {
+        position: relative;
+        z-index: 20;
         display: grid;
         grid-template-columns: 1fr 52px;
         gap: 6px;
@@ -2997,10 +2999,17 @@
         display: flex;
         gap: 5px;
         margin: 6px 0 7px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .search-options::-webkit-scrollbar {
+        display: none;
       }
 
       .search-option {
         height: 23px;
+        flex: 0 0 auto;
         padding: 0 9px;
         border: 0;
         border-radius: 999px;
@@ -3014,6 +3023,66 @@
       .search-option.active {
         background: rgba(255, 246, 167, 0.92);
         color: #1c5d26;
+      }
+
+      .search-options.suggestions-open {
+        pointer-events: none;
+      }
+
+      .map-search-suggestions {
+        position: absolute;
+        z-index: 12;
+        left: 0;
+        right: 58px;
+        top: 35px;
+        display: none;
+        max-height: 188px;
+        overflow-y: auto;
+        padding: 6px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: 0 14px 30px rgba(10, 39, 24, 0.28);
+        scrollbar-width: none;
+      }
+
+      .map-search-suggestions.show {
+        display: grid;
+        gap: 4px;
+      }
+
+      .map-search-suggestions::-webkit-scrollbar {
+        display: none;
+      }
+
+      .map-search-suggestion {
+        min-height: 34px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 6px 9px;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        color: #203528;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .map-search-suggestion:active,
+      .map-search-suggestion:hover {
+        background: #edf6e7;
+      }
+
+      .map-search-suggestion strong {
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .map-search-suggestion span {
+        color: #6a7968;
+        font-size: 11px;
+        font-weight: 850;
       }
 
       .real-map {
@@ -7401,6 +7470,7 @@
               <span class="search-icon">⌕</span>
               <input data-map-search value="夜鹭" placeholder="搜索鸟种，如 白鹭" />
             </label>
+            <div class="map-search-suggestions" data-map-search-suggestions></div>
             <button class="search-button" type="button" data-submit-map-search>搜索</button>
           </div>
           <div class="search-options" data-search-options></div>
@@ -7414,7 +7484,7 @@
             <span class="sort-pill">推荐顺序</span>
           </div>
           <div class="route-list" data-route-list></div>
-            <div class="data-note">当前定位：南京大学鼓楼校区；按距离和观察价值排序。</div>
+            <div class="data-note">当前定位：南京大学鼓楼校区；已收录 60 个真实南京及周边观鸟点。</div>
         </section>
         <div class="map-floating-tools">
           <button type="button" data-map-zoom-in>＋</button>
@@ -9755,35 +9825,80 @@
   zijinLinggu: { name: "紫金山灵谷寺林道", shortName: "灵谷寺林道", lat: 32.0669, lon: 118.8627 },
   jiuxiangRiver: { name: "九乡河生态公园水岸", shortName: "九乡河水岸", lat: 32.1004, lon: 118.9465 },
   aotiWetland: { name: "奥体中心滨江湿地", shortName: "奥体滨江", lat: 32.0089, lon: 118.7245 },
-  yuzui: { name: "南京鱼嘴湿地公园", shortName: "鱼嘴湿地", lat: 31.9802, lon: 118.6918 },
+  yuzui: { name: "南京鱼嘴湿地公园", shortName: "鱼嘴湿地", lat: 31.9795, lon: 118.6639 },
   jiangxinzhou: { name: "江心洲长江滩涂", shortName: "江心洲滩涂", lat: 32.0172, lon: 118.6978 },
-  lvshuiwan: { name: "绿水湾国家城市湿地公园", shortName: "绿水湾湿地", lat: 32.0715, lon: 118.9983 },
+  lvshuiwan: { name: "绿水湾国家城市湿地公园", shortName: "绿水湾湿地", lat: 32.0423, lon: 118.6437 },
   longpao: { name: "龙袍长江省级湿地公园", shortName: "龙袍湿地", lat: 32.1468, lon: 119.0360 },
-  laoshan: { name: "老山国家森林公园林缘", shortName: "老山林缘", lat: 32.0835, lon: 118.6120 }
+  laoshan: { name: "老山国家森林公园林缘", shortName: "老山林缘", lat: 32.0835, lon: 118.6120 },
+  zhongshanBotanical: { name: "南京中山植物园林缘", shortName: "中山植物园", lat: 32.0531, lon: 118.8249 },
+  hongshanZoo: { name: "红山森林动物园林带", shortName: "红山林带", lat: 32.0939, lon: 118.7967 },
+  bailuzhouPark: { name: "白鹭洲公园水岸", shortName: "白鹭洲公园", lat: 32.0194, lon: 118.7897 },
+  meilingPalace: { name: "美龄宫林缘步道", shortName: "美龄宫林缘", lat: 32.0477, lon: 118.8415 },
+  zhongshanLingLin: { name: "中山陵景区林道", shortName: "中山陵林道", lat: 32.0609, lon: 118.8485 },
+  baimaPark: { name: "白马公园紫金山西麓", shortName: "白马公园", lat: 32.0632, lon: 118.8117 },
+  xuanwuHepingmen: { name: "玄武湖和平门水岸", shortName: "和平门水岸", lat: 32.0832, lon: 118.7976 },
+  xuanwuLiangzhou: { name: "玄武湖梁洲湖岸", shortName: "玄武湖梁洲", lat: 32.0759, lon: 118.7908 },
+  xuanwuLingzhou: { name: "玄武湖菱洲浅水岸", shortName: "玄武湖菱洲", lat: 32.0718, lon: 118.7993 },
+  zhonghuaGateQinhuai: { name: "中华门外秦淮河水岸", shortName: "中华门水岸", lat: 32.0142, lon: 118.7741 },
+  yuejianglou: { name: "阅江楼狮子山滨江", shortName: "阅江楼滨江", lat: 32.0962, lon: 118.7413 },
+  yanzijiPark: { name: "燕子矶公园滨江", shortName: "燕子矶公园", lat: 32.1490, lon: 118.8124 },
+  muyanBinjiang: { name: "幕燕滨江风貌区江岸", shortName: "幕燕滨江", lat: 32.1394, lon: 118.7961 },
+  qixiaMountain: { name: "栖霞山风景区林缘", shortName: "栖霞山林缘", lat: 32.1568, lon: 118.9627 },
+  qixiaBinjiang: { name: "栖霞长江江滩湿地", shortName: "栖霞江滩", lat: 32.1625, lon: 118.9160 },
+  xianlinLake: { name: "仙林湖公园水岸", shortName: "仙林湖", lat: 32.1287, lon: 118.9815 },
+  yangshanLake: { name: "羊山湖公园林缘水岸", shortName: "羊山湖", lat: 32.0876, lon: 118.9253 },
+  jinniuLake: { name: "金牛湖风景区湖岸", shortName: "金牛湖", lat: 32.4675, lon: 118.9595 },
+  shijiuLake: { name: "石臼湖湿地观鸟岸线", shortName: "石臼湖", lat: 31.4741, lon: 118.8751 },
+  guchengLake: { name: "高淳固城湖水岸", shortName: "固城湖", lat: 31.2735, lon: 118.9224 },
+  qiliRiver: { name: "七里河滨江湿地", shortName: "七里河湿地", lat: 32.0005, lon: 118.7165 },
+  niushoushan: { name: "牛首山风景区林缘", shortName: "牛首山林缘", lat: 31.9074, lon: 118.7307 },
+  fangshan: { name: "方山国家地质公园林缘", shortName: "方山林缘", lat: 31.9032, lon: 118.8890 },
+  jiangjunshan: { name: "将军山风景区林缘", shortName: "将军山林缘", lat: 31.9363, lon: 118.7642 },
+  tangshanQuarry: { name: "汤山矿坑公园水岸", shortName: "汤山矿坑", lat: 32.0438, lon: 119.0335 },
+  pingshanForest: { name: "平山森林公园林缘", shortName: "平山森林", lat: 32.4643, lon: 118.8369 },
+  yeshanMinePark: { name: "冶山国家矿山公园林缘", shortName: "冶山矿山", lat: 32.5220, lon: 118.8200 },
+  foshouLake: { name: "佛手湖郊野公园水岸", shortName: "佛手湖", lat: 32.0880, lon: 118.5940 },
+  pearlSpring: { name: "珍珠泉风景区水岸", shortName: "珍珠泉", lat: 32.1210, lon: 118.6584 },
+  dinghuaimenYangtze: { name: "定淮门长江岸线", shortName: "定淮门江岸", lat: 32.0815, lon: 118.7240 },
+  qiaobeiBinjiang: { name: "桥北滨江湿地岸线", shortName: "桥北滨江", lat: 32.1300, lon: 118.7275 },
+  xinjizhouWetland: { name: "南京长江新济洲国家湿地公园", shortName: "新济洲湿地", lat: 31.8410, lon: 118.5410 },
+  yanqueLake: { name: "明孝陵燕雀湖水岸", shortName: "燕雀湖", lat: 32.0577, lon: 118.8290 },
+  pipahu: { name: "琵琶湖紫金山水岸", shortName: "琵琶湖", lat: 32.0648, lon: 118.8187 },
+  baijiaLake: { name: "百家湖公园水岸", shortName: "百家湖", lat: 31.9430, lon: 118.8210 }
 }
 
 const birdMapProfiles = {
-  夜鹭: { headline: "南大鼓楼夜鹭点", spots: [["xuanwuSouthwest", ["最推荐", "黄昏", "夜鹭"], "湖岸乔木和浅水交界，傍晚适合观察夜鹭停栖"], ["njuNorthPond", ["校园内", "安静", "夜鹭"], "校内小水面近，适合快速确认夜鹭是否停在岸边树荫"], ["xiaotaoyuan", ["河道", "17:30-19:00", "夜鹭"], "秦淮河道树荫连续，黄昏可沿线寻找夜鹭飞行和落脚"], ["qingliangWater", ["林缘", "低干扰", "夜鹭"], "林地和小水体相邻，适合远距离观察停栖个体"], ["xuanwuGate", ["湖湾", "开阔", "夜鹭"], "水岸开阔，便于看清夜鹭起飞、落脚和体态"]] },
-  白鹭: { headline: "南大鼓楼白鹭点", spots: [["xuanwuYingzhou", ["最推荐", "浅水", "白鹭"], "浅水和湖岸开阔，白鹭觅食动作明显"], ["qinhuaiZhongshan", ["近校", "河道", "白鹭"], "离鼓楼校区近，可沿河岸慢速搜索白鹭"], ["mochouEast", ["湖岸", "开阔", "白鹭"], "湖面视野宽，适合观察白鹭飞行和落水"], ["xiaotaoyuan", ["滨河", "低干扰", "白鹭"], "滨河绿道水面连续，适合新手顺路识别"], ["yuzui", ["湿地", "江岸", "白鹭"], "长江、夹江和秦淮新河交汇，湿地浅滩适合鹭类停留"]] },
-  白头鹎: { headline: "南大鼓楼白头鹎点", spots: [["njuNorthGrove", ["最推荐", "校园内", "白头鹎"], "乔木和灌木层丰富，白头鹎叫声明显"], ["njuSouthGrove", ["校园", "清晨", "白头鹎"], "清晨枝头活动频繁，适合听声找鸟"], ["gulouPark", ["城市绿地", "新手友好", "白头鹎"], "绿地连续，容易看到小群活动"], ["qingliangEast", ["林地", "灌木", "白头鹎"], "树阵密集，适合观察停栖和觅食"], ["xuanwuCuizhou", ["湖边灌木", "小群", "白头鹎"], "湖边灌木多，常有白头鹎穿梭"]] },
-  乌鸫: { headline: "南大鼓楼乌鸫点", spots: [["njuSouthGrove", ["最推荐", "草地", "乌鸫"], "南园草地和树阵相邻，适合观察乌鸫在地面觅食"], ["gulouPark", ["城市绿地", "清晨", "乌鸫"], "清晨绿地边缘较安静，常能听到乌鸫鸣唱"], ["qingliangEast", ["林下", "落叶层", "乌鸫"], "林下落叶和灌丛丰富，适合乌鸫翻找食物"], ["yuhuatai", ["林缘", "开阔草地", "乌鸫"], "林缘和草地交错，适合观察地面活动"], ["mingxiaoling", ["山林", "清晨", "乌鸫"], "明孝陵林带安静，清晨鸣声辨识度高"]] },
-  普通翠鸟: { headline: "南大鼓楼翠鸟点", spots: [["qinhuaiZhongshan", ["最推荐", "河道", "翠鸟"], "河岸有低枝和开阔水面，适合翠鸟停枝俯冲"], ["xiaotaoyuan", ["滨河", "低枝", "翠鸟"], "滨河树枝临水，适合观察翠鸟贴水飞行"], ["mochouEast", ["湖岸", "慢走", "翠鸟"], "东岸岸线转折多，适合寻找停在栏杆或低枝上的翠鸟"], ["njuNorthPond", ["校园", "小水面", "翠鸟"], "小水面近、干扰低，偶遇时便于快速确认"], ["qingliangWater", ["水榭", "安静", "翠鸟"], "水榭周边有树荫和水面交界，适合低干扰观察"]] },
-  池鹭: { headline: "南大鼓楼池鹭点", spots: [["njuNorthPond", ["最推荐", "校园池塘", "池鹭"], "小池塘浅水边适合观察池鹭静立和慢步觅食"], ["xuanwuSouthwest", ["湖岸", "浅水", "池鹭"], "湖岸浅水和草边适合池鹭隐蔽觅食"], ["mochouEast", ["湖岸", "开阔", "池鹭"], "东岸水边视野较好，便于区分池鹭与夜鹭"], ["xiaotaoyuan", ["河道", "黄昏", "池鹭"], "河岸低干扰时段适合观察池鹭沿岸活动"], ["qinhuaiZhongshan", ["近校", "水岸", "池鹭"], "近校河段适合短时间搜索鹭类"]] },
-  黑水鸡: { headline: "南大鼓楼黑水鸡点", spots: [["xuanwuYingzhou", ["最推荐", "芦苇", "黑水鸡"], "浅水和挺水植物多，适合黑水鸡藏身和觅食"], ["mochouEast", ["湖岸", "水草", "黑水鸡"], "湖岸水草边缘适合观察黑水鸡出入"], ["njuNorthPond", ["校园", "小水面", "黑水鸡"], "校内池塘距离近，适合快速确认水边动静"], ["xuanwuLovers", ["湖湾", "开阔", "黑水鸡"], "情侣园水岸视野较宽，便于看见黑水鸡游动"], ["jiuxiangRiver", ["生态公园", "水草", "黑水鸡"], "河道湿地水草丰富，适合水鸡类活动"]] },
-  小鸊鷉: { headline: "南大鼓楼小鸊鷉点", spots: [["xuanwuLovers", ["最推荐", "湖面", "小鸊鷉"], "开阔湖面便于观察小鸊鷉潜水和浮出"], ["xuanwuGate", ["湖湾", "潜水", "小鸊鷉"], "玄武门湖湾开阔，适合寻找潜水觅食个体"], ["mochouEast", ["湖面", "慢走", "小鸊鷉"], "莫愁湖东岸视野稳定，适合连续跟踪潜水位置"], ["jiuxiangRiver", ["河道", "安静", "小鸊鷉"], "生态河道干扰较低，适合水面观察"], ["aotiWetland", ["滨江", "开阔", "小鸊鷉"], "滨江湿地水面开阔，适合观察水鸟游弋"]] },
-  绿头鸭: { headline: "南大鼓楼绿头鸭点", spots: [["xuanwuYingzhou", ["最推荐", "冬季", "绿头鸭"], "玄武湖浅水岸冬季常见野鸭活动"], ["mochouEast", ["湖面", "开阔", "绿头鸭"], "湖面开阔，适合观察成群游弋"], ["lvshuiwan", ["湿地", "越冬", "绿头鸭"], "湿地鱼塘和沼泽恢复区适合越冬水鸟"], ["longpao", ["长江湿地", "越冬", "绿头鸭"], "长江湿地浅滩开阔，适合鸭类停歇"], ["jiuxiangRiver", ["生态公园", "水面", "绿头鸭"], "河道和湖湾相连，适合寻找小群野鸭"]] },
-  普通鸬鹚: { headline: "南大鼓楼鸬鹚点", spots: [["xuanwuLovers", ["最推荐", "冬候鸟", "鸬鹚"], "玄武湖宽阔水面和鱼类资源适合鸬鹚越冬觅食"], ["xuanwuGate", ["湖湾", "晾翅", "鸬鹚"], "湖湾附近常能观察鸬鹚潜水后停栖晾翅"], ["jiangxinzhou", ["长江滩涂", "开阔", "鸬鹚"], "长江滩涂视野开阔，适合远距离观察水鸟"], ["yuzui", ["三水交汇", "江岸", "鸬鹚"], "鱼嘴湿地位于多水体交汇处，适合鸬鹚觅食"], ["longpao", ["长江湿地", "越冬", "鸬鹚"], "长江湿地水域宽，适合冬季水鸟集群"]] },
-  白骨顶: { headline: "南大鼓楼白骨顶点", spots: [["xuanwuYingzhou", ["最推荐", "冬季", "白骨顶"], "玄武湖冬季常有白骨顶在开阔水面游弋"], ["lvshuiwan", ["湿地", "越冬", "白骨顶"], "绿水湾湿地冬季水鸟数量多，适合观察白骨顶"], ["longpao", ["长江湿地", "浅滩", "白骨顶"], "长江湿地浅水和开阔水面适合水鸟停留"], ["xuanwuLovers", ["湖面", "开阔", "白骨顶"], "情侣园湖面便于观察白骨顶成群游动"], ["mochouEast", ["湖岸", "新手友好", "白骨顶"], "东岸步道视野稳定，适合近距离确认额甲特征"]] },
-  斑嘴鸭: { headline: "南大鼓楼斑嘴鸭点", spots: [["lvshuiwan", ["最推荐", "野鸭", "斑嘴鸭"], "湿地鱼塘和浅水区适合斑嘴鸭停歇觅食"], ["longpao", ["长江湿地", "越冬", "斑嘴鸭"], "龙袍湿地浅滩开阔，适合观察鸭类群体"], ["xuanwuYingzhou", ["城市湖泊", "冬季", "斑嘴鸭"], "玄武湖浅水岸可作为城市内观察点"], ["jiuxiangRiver", ["生态公园", "水面", "斑嘴鸭"], "九乡河水岸干扰较低，适合寻找小群鸭类"], ["aotiWetland", ["滨江湿地", "开阔", "斑嘴鸭"], "滨江水面开阔，适合远距离观察野鸭"]] },
-  大白鹭: { headline: "南大鼓楼大白鹭点", spots: [["yuzui", ["最推荐", "浅滩", "大白鹭"], "江岸浅滩开阔，适合观察大型白色鹭类觅食"], ["lvshuiwan", ["湿地", "水田", "大白鹭"], "湿地浅水和鱼塘边缘适合大白鹭停留"], ["longpao", ["长江湿地", "开阔", "大白鹭"], "长江湿地视野开阔，便于区分大白鹭体型"], ["xuanwuYingzhou", ["城市湖泊", "浅水", "大白鹭"], "玄武湖浅水岸可作为城市内观察补充点"], ["qinhuaiZhongshan", ["河道", "近校", "大白鹭"], "秦淮河近校段适合短线寻找大型鹭类"]] },
-  珠颈斑鸠: { headline: "南大鼓楼珠颈斑鸠点", spots: [["njuSouthGrove", ["最推荐", "校园", "珠颈斑鸠"], "校园树阵和草地交错，珠颈斑鸠常在地面取食"], ["gulouPark", ["城市绿地", "常见", "珠颈斑鸠"], "公园绿地开阔，容易观察步行觅食"], ["qingliangEast", ["林缘", "安静", "珠颈斑鸠"], "林缘步道干扰较低，适合听声找鸟"], ["xuanwuCuizhou", ["湖边林带", "常见", "珠颈斑鸠"], "湖边林带与草地相邻，常见斑鸠活动"], ["yuhuatai", ["林地草坡", "开阔", "珠颈斑鸠"], "草坡和林地交界适合观察地面觅食"]] },
-  喜鹊: { headline: "南大鼓楼喜鹊点", spots: [["gulouPark", ["最推荐", "城市林带", "喜鹊"], "高大乔木和草地相邻，喜鹊活动明显"], ["njuSouthGrove", ["校园", "树阵", "喜鹊"], "校园树阵便于观察喜鹊长尾和飞行姿态"], ["xuanwuCuizhou", ["湖边林带", "开阔", "喜鹊"], "湖边高树多，适合观察停栖和地面活动"], ["mingxiaoling", ["山林", "清晨", "喜鹊"], "山林边缘安静，适合观察小群活动"], ["yuhuatai", ["林地", "草坡", "喜鹊"], "草坡和树冠空间开阔，适合远距离观察"]] },
-  灰喜鹊: { headline: "南大鼓楼灰喜鹊点", spots: [["qingliangEast", ["最推荐", "林带", "灰喜鹊"], "清凉山林带连续，适合寻找灰喜鹊小群穿梭"], ["mingxiaoling", ["山林", "小群", "灰喜鹊"], "明孝陵林缘空间大，便于观察灰喜鹊群体移动"], ["zijinQianhu", ["紫金山", "林缘", "灰喜鹊"], "前湖林缘树层丰富，适合听声定位"], ["yuhuatai", ["林地", "开阔", "灰喜鹊"], "林地与草坡交界便于观察停栖"], ["laoshan", ["森林", "低干扰", "灰喜鹊"], "老山林地面积大，适合寻找更自然的林鸟活动"]] },
-  大山雀: { headline: "南大鼓楼大山雀点", spots: [["qingliangEast", ["最推荐", "林地", "大山雀"], "树阵和灌木层丰富，适合听声寻找大山雀"], ["njuSouthGrove", ["校园", "树冠", "大山雀"], "校园树冠高度适中，便于观察停栖和跳枝"], ["mingxiaoling", ["山林", "清晨", "大山雀"], "山林环境稳定，清晨叫声明显"], ["zijinLinggu", ["紫金山", "林道", "大山雀"], "林道两侧树层连续，适合慢走听声"], ["laoshan", ["森林", "低干扰", "大山雀"], "老山森林环境更完整，适合观察林鸟混群"]] },
-  棕背伯劳: { headline: "南大鼓楼棕背伯劳点", spots: [["yuhuatai", ["最推荐", "灌丛", "棕背伯劳"], "开阔草地和灌丛边缘适合伯劳停在高处巡视"], ["xiaotaoyuan", ["河岸灌丛", "开阔", "棕背伯劳"], "滨河灌丛和开阔地交错，适合寻找停栖点"], ["yuzui", ["湿地边缘", "开阔", "棕背伯劳"], "湿地草丛和栅栏空间开阔，适合观察伯劳捕食行为"], ["aotiWetland", ["滨江", "草地", "棕背伯劳"], "滨江草地和灌木带适合伯劳活动"], ["jiangxinzhou", ["滩涂边", "开阔", "棕背伯劳"], "滩涂和农田边缘开阔，便于远距离观察"]] },
-  家燕: { headline: "南大鼓楼家燕点", spots: [["njuSouthGrove", ["最推荐", "校园建筑", "家燕"], "校园建筑和开阔草地相邻，适合观察家燕低飞觅食"], ["qinhuaiZhongshan", ["桥下", "河道", "家燕"], "河道桥梁和水面昆虫多，适合家燕贴水飞行"], ["xuanwuGate", ["城墙水岸", "开阔", "家燕"], "开阔水岸便于观察家燕盘旋"], ["aotiWetland", ["滨江", "低飞", "家燕"], "滨江草地和水面开阔，适合看飞行路线"], ["xiaotaoyuan", ["滨河", "黄昏", "家燕"], "傍晚水岸昆虫活跃，适合观察捕食"]] },
-  八哥: { headline: "南大鼓楼八哥点", spots: [["gulouPark", ["最推荐", "城市绿地", "八哥"], "公园草地和建筑边缘常有八哥地面活动"], ["njuSouthGrove", ["校园", "草地", "八哥"], "校园草地易观察八哥步行觅食"], ["qinhuaiZhongshan", ["河岸", "居民区", "八哥"], "城市河岸和居民区相邻，适合寻找八哥小群"], ["xuanwuGate", ["城墙", "开阔", "八哥"], "开阔广场和树阵相邻，便于观察停栖"], ["aotiWetland", ["滨江草地", "开阔", "八哥"], "滨江草地空间大，适合观察地面觅食"]] },
-  白鹡鸰: { headline: "南大鼓楼白鹡鸰点", spots: [["qinhuaiZhongshan", ["最推荐", "水边空地", "白鹡鸰"], "河岸硬质空地和浅水边适合白鹡鸰快步觅食"], ["njuNorthPond", ["校园", "池塘边", "白鹡鸰"], "校内池塘边开阔，适合快速确认尾部摆动特征"], ["xuanwuGate", ["湖岸", "开阔", "白鹡鸰"], "玄武门水岸步道开阔，白鹡鸰活动容易看见"], ["xiaotaoyuan", ["滨河步道", "低干扰", "白鹡鸰"], "滨河步道边缘适合沿线搜索"], ["aotiWetland", ["滨江", "水边空地", "白鹡鸰"], "滨江空地和浅水边交错，适合观察快步觅食"]] }
+  夜鹭: { headline: "南京夜鹭观鸟点", spots: [["xuanwuSouthwest", ["最推荐", "黄昏", "夜鹭"], "湖岸乔木和浅水交界，傍晚适合观察夜鹭停栖"], ["njuNorthPond", ["校园内", "安静", "夜鹭"], "校内小水面近，适合快速确认水边树荫"], ["xiaotaoyuan", ["河道", "17:30-19:00", "夜鹭"], "秦淮河道树荫连续，黄昏可沿线寻找飞行和落脚"], ["bailuzhouPark", ["水岸", "老城", "夜鹭"], "公园水面和乔木相邻，适合看鹭类归栖"], ["yanzijiPark", ["滨江", "开阔", "夜鹭"], "江岸和树带交错，适合远距离观察鹭类活动"]] },
+  白鹭: { headline: "南京白鹭观鸟点", spots: [["yuzui", ["最推荐", "湿地", "白鹭"], "长江、夹江和秦淮新河交汇，浅滩适合鹭类停留"], ["lvshuiwan", ["湿地", "浅水", "白鹭"], "湿地鱼塘和沼泽恢复区适合白鹭觅食"], ["longpao", ["长江湿地", "开阔", "白鹭"], "江滩开阔，便于观察白鹭起落和集群"], ["qiliRiver", ["滨江", "浅滩", "白鹭"], "河口湿地和江岸浅水适合鹭类停歇"], ["aotiWetland", ["近城", "江岸", "白鹭"], "滨江草地和水面相邻，新手也容易观察"]] },
+  白头鹎: { headline: "南京白头鹎观鸟点", spots: [["njuNorthGrove", ["最推荐", "校园内", "白头鹎"], "乔木和灌木层丰富，白头鹎叫声明显"], ["gulouPark", ["城市绿地", "新手友好", "白头鹎"], "城市绿地连续，容易看到小群活动"], ["qingliangEast", ["林地", "灌木", "白头鹎"], "树阵密集，适合观察停栖和觅食"], ["zhongshanBotanical", ["植物园", "花木", "白头鹎"], "花木和果树丰富，适合听声找鸟"], ["hongshanZoo", ["林带", "城市北部", "白头鹎"], "红山林带面积大，适合搜索城市林鸟"]] },
+  乌鸫: { headline: "南京乌鸫观鸟点", spots: [["njuSouthGrove", ["最推荐", "草地", "乌鸫"], "南园草地和树阵相邻，适合观察乌鸫地面觅食"], ["yuhuatai", ["林缘", "草坡", "乌鸫"], "林缘和草地交错，适合观察地面活动"], ["mingxiaoling", ["山林", "清晨", "乌鸫"], "明孝陵林带安静，清晨鸣声辨识度高"], ["meilingPalace", ["林缘", "紫金山", "乌鸫"], "林下落叶层和草地相邻，适合慢走听声"], ["laoshan", ["森林", "低干扰", "乌鸫"], "老山森林环境完整，适合观察林鸟活动"]] },
+  普通翠鸟: { headline: "南京普通翠鸟观鸟点", spots: [["qinhuaiZhongshan", ["最推荐", "河道", "翠鸟"], "河岸有低枝和开阔水面，适合翠鸟停枝俯冲"], ["xiaotaoyuan", ["滨河", "低枝", "翠鸟"], "滨河树枝临水，适合观察翠鸟贴水飞行"], ["mochouEast", ["湖岸", "慢走", "翠鸟"], "东岸岸线转折多，适合寻找停在栏杆或低枝上的翠鸟"], ["qingliangWater", ["水榭", "安静", "翠鸟"], "水榭周边有树荫和水面交界，适合低干扰观察"], ["jiuxiangRiver", ["生态公园", "水岸", "翠鸟"], "生态河道干扰较低，适合沿水边寻找停枝"]] },
+  池鹭: { headline: "南京池鹭观鸟点", spots: [["njuNorthPond", ["最推荐", "校园池塘", "池鹭"], "小池塘浅水边适合观察池鹭静立和慢步觅食"], ["mochouEast", ["湖岸", "开阔", "池鹭"], "东岸水边视野较好，便于区分池鹭与夜鹭"], ["bailuzhouPark", ["老城水岸", "夏季", "池鹭"], "水岸与树荫相邻，适合寻找池鹭隐蔽觅食"], ["xuanwuLingzhou", ["浅水", "水草", "池鹭"], "菱洲浅水岸适合观察鹭类近岸活动"], ["baijiaLake", ["江宁湖岸", "开阔", "池鹭"], "湖岸步道开阔，适合远距离确认鹭类体态"]] },
+  黑水鸡: { headline: "南京黑水鸡观鸟点", spots: [["xuanwuYingzhou", ["最推荐", "芦苇", "黑水鸡"], "浅水和挺水植物多，适合黑水鸡藏身和觅食"], ["xuanwuLovers", ["湖湾", "开阔", "黑水鸡"], "情侣园水岸视野较宽，便于看见黑水鸡游动"], ["jiuxiangRiver", ["生态公园", "水草", "黑水鸡"], "河道湿地水草丰富，适合水鸡类活动"], ["qiliRiver", ["湿地", "低干扰", "黑水鸡"], "河口湿地水草边缘适合观察水鸡出入"], ["baijiaLake", ["湖岸", "城市水面", "黑水鸡"], "城市湖岸和水草交错，适合新手搜索"]] },
+  小鸊鷉: { headline: "南京小鸊鷉观鸟点", spots: [["xuanwuLovers", ["最推荐", "湖面", "小鸊鷉"], "开阔湖面便于观察小鸊鷉潜水和浮出"], ["xuanwuGate", ["湖湾", "潜水", "小鸊鷉"], "玄武门湖湾开阔，适合寻找潜水觅食个体"], ["mochouEast", ["湖面", "慢走", "小鸊鷉"], "莫愁湖东岸视野稳定，适合连续跟踪潜水位置"], ["shijiuLake", ["大湖", "冬季", "小鸊鷉"], "大湖水面开阔，适合冬季观察水鸟"], ["guchengLake", ["高淳", "湖岸", "小鸊鷉"], "固城湖水岸开阔，适合寻找潜水型水鸟"]] },
+  绿头鸭: { headline: "南京绿头鸭观鸟点", spots: [["xuanwuYingzhou", ["最推荐", "冬季", "绿头鸭"], "玄武湖浅水岸冬季常见野鸭活动"], ["lvshuiwan", ["湿地", "越冬", "绿头鸭"], "湿地鱼塘和沼泽恢复区适合越冬水鸟"], ["longpao", ["长江湿地", "越冬", "绿头鸭"], "长江湿地浅滩开阔，适合鸭类停歇"], ["jinniuLake", ["六合湖区", "开阔", "绿头鸭"], "金牛湖水面宽，适合冬季远观鸭类"], ["shijiuLake", ["大湖湿地", "候鸟", "绿头鸭"], "石臼湖是南京周边重要水鸟观察区域"]] },
+  普通鸬鹚: { headline: "南京普通鸬鹚观鸟点", spots: [["xuanwuHepingmen", ["最推荐", "冬候鸟", "鸬鹚"], "和平门水岸视野开阔，适合观察鸬鹚潜水和晾翅"], ["jiangxinzhou", ["长江滩涂", "开阔", "鸬鹚"], "长江滩涂视野开阔，适合远距离观察水鸟"], ["yuzui", ["三水交汇", "江岸", "鸬鹚"], "鱼嘴湿地位于多水体交汇处，适合鸬鹚觅食"], ["longpao", ["长江湿地", "越冬", "鸬鹚"], "长江湿地水域宽，适合冬季水鸟集群"], ["dinghuaimenYangtze", ["江岸", "近城", "鸬鹚"], "长江岸线开阔，适合观察鸬鹚沿江飞行"]] },
+  白骨顶: { headline: "南京白骨顶观鸟点", spots: [["xuanwuLiangzhou", ["最推荐", "冬季", "白骨顶"], "玄武湖冬季常有白骨顶在开阔水面游弋"], ["lvshuiwan", ["湿地", "越冬", "白骨顶"], "绿水湾湿地冬季水鸟数量多，适合观察白骨顶"], ["longpao", ["长江湿地", "浅滩", "白骨顶"], "长江湿地浅水和开阔水面适合水鸟停留"], ["jinniuLake", ["湖区", "开阔", "白骨顶"], "金牛湖视野宽，适合冬季水鸟远观"], ["guchengLake", ["高淳", "大水面", "白骨顶"], "固城湖水面连续，适合寻找成群水鸟"]] },
+  斑嘴鸭: { headline: "南京斑嘴鸭观鸟点", spots: [["lvshuiwan", ["最推荐", "野鸭", "斑嘴鸭"], "湿地鱼塘和浅水区适合斑嘴鸭停歇觅食"], ["longpao", ["长江湿地", "越冬", "斑嘴鸭"], "龙袍湿地浅滩开阔，适合观察鸭类群体"], ["shijiuLake", ["大湖湿地", "候鸟", "斑嘴鸭"], "石臼湖水鸟资源丰富，适合冬季远观"], ["jinniuLake", ["六合湖区", "开阔", "斑嘴鸭"], "湖湾和浅水带适合寻找小群鸭类"], ["xinjizhouWetland", ["国家湿地", "长江", "斑嘴鸭"], "长江湿地生境完整，适合候鸟停歇"]] },
+  大白鹭: { headline: "南京大白鹭观鸟点", spots: [["yuzui", ["最推荐", "浅滩", "大白鹭"], "江岸浅滩开阔，适合观察大型白色鹭类觅食"], ["lvshuiwan", ["湿地", "水田", "大白鹭"], "湿地浅水和鱼塘边缘适合大白鹭停留"], ["longpao", ["长江湿地", "开阔", "大白鹭"], "长江湿地视野开阔，便于区分大白鹭体型"], ["qixiaBinjiang", ["江滩", "远观", "大白鹭"], "栖霞江滩开阔，适合观察大型鹭类沿江活动"], ["shijiuLake", ["大湖湿地", "候鸟", "大白鹭"], "石臼湖岸线适合观察大型涉禽和水鸟"]] },
+  珠颈斑鸠: { headline: "南京珠颈斑鸠观鸟点", spots: [["njuSouthGrove", ["最推荐", "校园", "珠颈斑鸠"], "校园树阵和草地交错，珠颈斑鸠常在地面取食"], ["gulouPark", ["城市绿地", "常见", "珠颈斑鸠"], "公园绿地开阔，容易观察步行觅食"], ["qingliangEast", ["林缘", "安静", "珠颈斑鸠"], "林缘步道干扰较低，适合听声找鸟"], ["baimaPark", ["山脚林地", "开阔", "珠颈斑鸠"], "紫金山西麓草地和树带相邻，适合观察地面取食"], ["pearlSpring", ["浦口", "林缘", "珠颈斑鸠"], "珍珠泉水岸和林缘交错，适合常见林鸟"]] },
+  喜鹊: { headline: "南京喜鹊观鸟点", spots: [["gulouPark", ["最推荐", "城市林带", "喜鹊"], "高大乔木和草地相邻，喜鹊活动明显"], ["xuanwuCuizhou", ["湖边林带", "开阔", "喜鹊"], "湖边高树多，适合观察停栖和地面活动"], ["mingxiaoling", ["山林", "清晨", "喜鹊"], "山林边缘安静，适合观察小群活动"], ["yuejianglou", ["滨江林带", "城市", "喜鹊"], "狮子山林带和江岸开阔地相邻，适合看停栖"], ["pingshanForest", ["六合森林", "低干扰", "喜鹊"], "森林公园生境更完整，适合观察鸦科鸟类"]] },
+  灰喜鹊: { headline: "南京灰喜鹊观鸟点", spots: [["qingliangEast", ["最推荐", "林带", "灰喜鹊"], "清凉山林带连续，适合寻找灰喜鹊小群穿梭"], ["zijinQianhu", ["紫金山", "林缘", "灰喜鹊"], "前湖林缘树层丰富，适合听声定位"], ["zijinLinggu", ["林道", "小群", "灰喜鹊"], "灵谷寺林道安静，适合观察群体移动"], ["qixiaMountain", ["山林", "秋冬", "灰喜鹊"], "栖霞山林相丰富，适合寻找林鸟混群"], ["foshouLake", ["浦口", "林水交界", "灰喜鹊"], "湖岸与林地相邻，适合观察鸦科鸟类活动"]] },
+  大山雀: { headline: "南京大山雀观鸟点", spots: [["zhongshanBotanical", ["最推荐", "植物园", "大山雀"], "树层丰富，适合听声寻找大山雀"], ["mingxiaoling", ["山林", "清晨", "大山雀"], "山林环境稳定，清晨叫声明显"], ["zijinLinggu", ["紫金山", "林道", "大山雀"], "林道两侧树层连续，适合慢走听声"], ["laoshan", ["森林", "低干扰", "大山雀"], "老山森林环境更完整，适合观察林鸟混群"], ["zhongshanLingLin", ["景区林道", "安静", "大山雀"], "中山陵林道树层连续，适合寻找小型林鸟"]] },
+  棕背伯劳: { headline: "南京棕背伯劳观鸟点", spots: [["yuhuatai", ["最推荐", "灌丛", "棕背伯劳"], "开阔草地和灌丛边缘适合伯劳停在高处巡视"], ["yuzui", ["湿地边缘", "开阔", "棕背伯劳"], "湿地草丛和栅栏空间开阔，适合观察伯劳捕食行为"], ["aotiWetland", ["滨江", "草地", "棕背伯劳"], "滨江草地和灌木带适合伯劳活动"], ["jiangxinzhou", ["滩涂边", "开阔", "棕背伯劳"], "滩涂和农田边缘开阔，便于远距离观察"], ["qiaobeiBinjiang", ["滨江", "灌丛", "棕背伯劳"], "江岸灌丛和开阔草地适合伯劳停栖"]] },
+  家燕: { headline: "南京家燕观鸟点", spots: [["njuSouthGrove", ["最推荐", "校园建筑", "家燕"], "校园建筑和开阔草地相邻，适合观察家燕低飞觅食"], ["qinhuaiZhongshan", ["桥下", "河道", "家燕"], "河道桥梁和水面昆虫多，适合家燕贴水飞行"], ["zhonghuaGateQinhuai", ["城墙水岸", "开阔", "家燕"], "外秦淮河水面开阔，适合观察燕类盘旋"], ["aotiWetland", ["滨江", "低飞", "家燕"], "滨江草地和水面开阔，适合看飞行路线"], ["muyanBinjiang", ["滨江", "风口", "家燕"], "江岸开阔，适合观察燕类沿岸觅食"]] },
+  八哥: { headline: "南京八哥观鸟点", spots: [["gulouPark", ["最推荐", "城市绿地", "八哥"], "公园草地和建筑边缘常有八哥地面活动"], ["baimaPark", ["山脚绿地", "常见", "八哥"], "开阔草地和树带相邻，适合寻找八哥小群"], ["hongshanZoo", ["城市林带", "北部", "八哥"], "红山林带和开阔地交错，适合城市鸟类活动"], ["xianlinLake", ["仙林湖", "水岸", "八哥"], "水岸草地开阔，适合观察地面觅食"], ["tangshanQuarry", ["江宁", "开阔", "八哥"], "矿坑公园水面和草地相邻，适合常见鸟类"]] },
+  白鹡鸰: { headline: "南京白鹡鸰观鸟点", spots: [["qinhuaiZhongshan", ["最推荐", "水边空地", "白鹡鸰"], "河岸硬质空地和浅水边适合白鹡鸰快步觅食"], ["njuNorthPond", ["校园", "池塘边", "白鹡鸰"], "校内池塘边开阔，适合快速确认尾部摆动特征"], ["xuanwuGate", ["湖岸", "开阔", "白鹡鸰"], "玄武门水岸步道开阔，白鹡鸰活动容易看见"], ["dinghuaimenYangtze", ["江岸", "硬质岸线", "白鹡鸰"], "江岸空地和浅水边交错，适合快步觅食"], ["muyanBinjiang", ["滨江", "开阔", "白鹡鸰"], "滨江步道开阔，适合沿线搜索"]] },
+  戴胜: { headline: "南京戴胜观鸟点", spots: [["yuhuatai", ["最推荐", "草坡", "戴胜"], "开阔草地和疏林相邻，适合观察戴胜在地面取食"], ["niushoushan", ["江宁山林", "草地", "戴胜"], "山脚草地和林缘交错，适合寻找戴胜"], ["fangshan", ["江宁", "林缘", "戴胜"], "方山疏林和草地适合观察地面活动"], ["jiangjunshan", ["山林", "低干扰", "戴胜"], "将军山林缘较安静，适合清晨慢走寻找"], ["tangshanQuarry", ["开阔地", "江宁", "戴胜"], "矿坑公园草地和裸地相邻，适合戴胜觅食"]] },
+  树麻雀: { headline: "南京树麻雀观鸟点", spots: [["njuSouthGrove", ["最推荐", "校园", "树麻雀"], "校园建筑和草地相邻，容易观察树麻雀小群"], ["gulouPark", ["城市绿地", "常见", "树麻雀"], "公园草地和灌木边缘适合地面取食"], ["qinhuaiZhongshan", ["居民区", "河岸", "树麻雀"], "河岸和居民区相邻，适合寻找常见小鸟"], ["zhonghuaGateQinhuai", ["老城", "桥下", "树麻雀"], "城墙和河岸环境适合观察城市鸟类"], ["qiaobeiBinjiang", ["滨江", "草地", "树麻雀"], "江岸草地开阔，适合小型鸣禽活动"]] },
+  红嘴蓝鹊: { headline: "南京红嘴蓝鹊观鸟点", spots: [["zijinLinggu", ["最推荐", "紫金山", "红嘴蓝鹊"], "林道两侧树层连续，适合观察长尾鸦科鸟"], ["qixiaMountain", ["山林", "秋冬", "红嘴蓝鹊"], "栖霞山林相丰富，适合寻找林鸟小群"], ["laoshan", ["森林", "浦口", "红嘴蓝鹊"], "老山森林面积大，适合低干扰观察"], ["foshouLake", ["浦口", "林水交界", "红嘴蓝鹊"], "湖岸和林地相邻，适合鸦科鸟类活动"], ["pearlSpring", ["浦口", "林缘", "红嘴蓝鹊"], "珍珠泉林缘安静，适合听声定位"]] },
+  黑卷尾: { headline: "南京黑卷尾观鸟点", spots: [["yuhuatai", ["最推荐", "开阔林缘", "黑卷尾"], "开阔草地和树梢相邻，适合观察黑卷尾停栖捕虫"], ["aotiWetland", ["滨江", "草地", "黑卷尾"], "滨江草地开阔，适合夏季观察飞捕"], ["yuzui", ["湿地边缘", "开阔", "黑卷尾"], "湿地草地和低树相邻，适合观察停栖巡视"], ["jiangxinzhou", ["滩涂农田", "开阔", "黑卷尾"], "江心洲开阔地多，适合观察林缘鸟类"], ["qixiaBinjiang", ["江滩", "开阔", "黑卷尾"], "江滩和树带相邻，适合夏候鸟活动"]] },
+  山斑鸠: { headline: "南京山斑鸠观鸟点", spots: [["qingliangEast", ["最推荐", "林缘", "山斑鸠"], "林缘步道干扰较低，适合听声找鸟"], ["yuhuatai", ["草坡", "林地", "山斑鸠"], "草坡和林地交界适合观察地面觅食"], ["fangshan", ["江宁", "山林", "山斑鸠"], "疏林和农田边缘适合斑鸠活动"], ["pingshanForest", ["六合森林", "低干扰", "山斑鸠"], "森林公园面积大，适合观察林地鸟"], ["yeshanMinePark", ["六合", "林缘", "山斑鸠"], "矿山公园林缘和开阔地相邻，适合斑鸠停栖"]] },
+  金翅雀: { headline: "南京金翅雀观鸟点", spots: [["yuhuatai", ["最推荐", "草地", "金翅雀"], "开阔草地和树带相邻，适合寻找小型雀形目"], ["xianlinLake", ["仙林", "草地", "金翅雀"], "湖岸草地开阔，适合冬季寻找小鸟群"], ["yangshanLake", ["仙林", "林缘", "金翅雀"], "羊山湖林缘和草地相邻，适合观察取食"], ["niushoushan", ["江宁", "林缘", "金翅雀"], "山脚草地和树带交错，适合搜索小型鸣禽"], ["baijiaLake", ["江宁湖岸", "草地", "金翅雀"], "湖岸草地便于远距离观察小群活动"]] },
+  暗绿绣眼鸟: { headline: "南京暗绿绣眼鸟观鸟点", spots: [["zhongshanBotanical", ["最推荐", "花木", "暗绿绣眼鸟"], "植物园花木丰富，适合寻找绣眼鸟小群"], ["meilingPalace", ["紫金山", "林缘", "暗绿绣眼鸟"], "林缘灌木和花木相邻，适合听声寻找"], ["mingxiaoling", ["山林", "清晨", "暗绿绣眼鸟"], "明孝陵林带安静，适合观察小型林鸟"], ["baimaPark", ["山脚林地", "城市", "暗绿绣眼鸟"], "紫金山西麓灌木层丰富，适合小鸟穿梭"], ["yanqueLake", ["燕雀湖", "水岸林带", "暗绿绣眼鸟"], "湖岸林带花木多，适合寻找混群"]] },
+  领雀嘴鹎: { headline: "南京领雀嘴鹎观鸟点", spots: [["zhongshanBotanical", ["最推荐", "植物园", "领雀嘴鹎"], "果树和灌木丰富，适合寻找鹎类活动"], ["qixiaMountain", ["山林", "秋冬", "领雀嘴鹎"], "栖霞山林相丰富，适合寻找林鸟"], ["laoshan", ["浦口森林", "低干扰", "领雀嘴鹎"], "老山森林面积大，适合观察山林鸟"], ["foshouLake", ["浦口", "林水交界", "领雀嘴鹎"], "湖岸和林地相邻，适合鹎类取食"], ["pingshanForest", ["六合森林", "林缘", "领雀嘴鹎"], "森林公园环境完整，适合观察林鸟混群"]] },
+  苍鹭: { headline: "南京苍鹭观鸟点", spots: [["xuanwuHepingmen", ["最推荐", "湖岸", "苍鹭"], "开阔水面便于观察大型鹭类停立和飞行"], ["qixiaBinjiang", ["江滩", "远观", "苍鹭"], "栖霞江滩开阔，适合观察大型涉禽"], ["shijiuLake", ["大湖湿地", "候鸟", "苍鹭"], "石臼湖岸线开阔，适合远距离观察"], ["guchengLake", ["高淳", "湖岸", "苍鹭"], "固城湖水岸开阔，适合看大型水鸟"], ["xinjizhouWetland", ["国家湿地", "长江", "苍鹭"], "长江湿地生境完整，适合鹭类停歇"]] },
+  白胸苦恶鸟: { headline: "南京白胸苦恶鸟观鸟点", spots: [["xuanwuLingzhou", ["最推荐", "水草", "白胸苦恶鸟"], "浅水和挺水植物相邻，适合观察秧鸡类"], ["jiuxiangRiver", ["生态公园", "水草", "白胸苦恶鸟"], "河道湿地水草丰富，适合水边隐蔽鸟类"], ["qiliRiver", ["滨江湿地", "低干扰", "白胸苦恶鸟"], "河口湿地植被丰富，适合听声寻找"], ["pipahu", ["紫金山水岸", "林水交界", "白胸苦恶鸟"], "小水面和林缘相邻，适合观察隐蔽水鸟"], ["baijiaLake", ["江宁湖岸", "水草", "白胸苦恶鸟"], "湖岸水草带适合秧鸡类活动"]] }
 }
 
 function getMapSiteCoordinate() {
@@ -11433,7 +11548,49 @@ const searchOptions = Object.keys(birdMaps);
 
       function resolveBirdKey(value) {
         const keyword = String(value || "").trim();
-        return searchOptions.find((bird) => keyword.includes(bird) || bird.includes(keyword)) || "夜鹭";
+        if (!keyword) return activeBird || "夜鹭";
+        return searchOptions.find((bird) => bird === keyword) ||
+          searchOptions.find((bird) => bird.includes(keyword) || keyword.includes(bird)) ||
+          activeBird ||
+          "夜鹭";
+      }
+
+      function getMapSearchMatches(value) {
+        const keyword = String(value || "").trim();
+        if (!keyword) return searchOptions.slice(0, 10);
+        const exact = searchOptions.filter((bird) => bird === keyword);
+        const starts = searchOptions.filter((bird) => bird !== keyword && bird.startsWith(keyword));
+        const contains = searchOptions.filter((bird) => bird !== keyword && !bird.startsWith(keyword) && bird.includes(keyword));
+        return [...exact, ...starts, ...contains].slice(0, 12);
+      }
+
+      function renderMapSearchOptions(value = "") {
+        const keyword = String(value || "").trim();
+        const matches = getMapSearchMatches(keyword);
+        const fallback = keyword && !matches.length ? [`没有找到含“${keyword}”的鸟种`] : [];
+        document.querySelector("[data-search-options]").innerHTML = (matches.length ? matches : searchOptions.slice(0, 8)).map((bird) => (
+          `<button class="search-option ${bird === activeBird ? "active" : ""}" type="button" data-search-bird="${escapeHtml(bird)}">${escapeHtml(bird)}</button>`
+        )).join("");
+        const suggestionPanel = document.querySelector("[data-map-search-suggestions]");
+        suggestionPanel.innerHTML = matches.map((bird) => {
+          const spotCount = birdMaps[bird]?.spots?.length || 0;
+          return `<button class="map-search-suggestion" type="button" data-search-bird="${escapeHtml(bird)}"><strong>${escapeHtml(bird)}</strong><span>${spotCount} 个推荐点</span></button>`;
+        }).join("") || fallback.map((text) => `<button class="map-search-suggestion" type="button" disabled><strong>${escapeHtml(text)}</strong><span>试试 白鹭 / 夜鹭</span></button>`).join("");
+        const shouldShowSuggestions = Boolean(keyword || document.activeElement === document.querySelector("[data-map-search]"));
+        suggestionPanel.classList.toggle("show", shouldShowSuggestions);
+        document.querySelector("[data-search-options]").classList.toggle("suggestions-open", shouldShowSuggestions);
+        document.querySelectorAll("[data-search-bird]").forEach((button) => {
+          button.addEventListener("click", () => {
+            activeBird = button.dataset.searchBird;
+            activeRouteRank = 1;
+            activeMapZoomOffset = defaultMapZoomOffset;
+            activeMapPan = { x: 0, y: 0 };
+            document.querySelector("[data-map-search]").value = activeBird;
+            document.querySelector("[data-map-search-suggestions]").classList.remove("show");
+            document.querySelector("[data-search-options]").classList.remove("suggestions-open");
+            renderMap();
+          });
+        });
       }
 
       function renderMap() {
@@ -11452,9 +11609,7 @@ const searchOptions = Object.keys(birdMaps);
         const tiles = [];
 
         document.querySelector("[data-map-search]").value = mapData.bird;
-        document.querySelector("[data-search-options]").innerHTML = searchOptions.map((bird) => (
-          `<button class="search-option ${bird === mapData.bird ? "active" : ""}" type="button" data-search-bird="${bird}">${bird}</button>`
-        )).join("");
+        renderMapSearchOptions(mapData.bird);
 
         for (let x = Math.floor(left / tileSize); x <= Math.floor(right / tileSize); x += 1) {
           for (let y = Math.floor(top / tileSize); y <= Math.floor(bottom / tileSize); y += 1) {
@@ -11511,15 +11666,6 @@ const searchOptions = Object.keys(birdMaps);
           </article>
         `).join("");
 
-        document.querySelectorAll("[data-search-bird]").forEach((button) => {
-          button.addEventListener("click", () => {
-            activeBird = button.dataset.searchBird;
-            activeRouteRank = 1;
-            activeMapZoomOffset = defaultMapZoomOffset;
-            activeMapPan = { x: 0, y: 0 };
-            renderMap();
-          });
-        });
         document.querySelectorAll("[data-route-rank]").forEach((item) => {
           item.addEventListener("click", () => {
             activeRouteRank = Number(item.dataset.routeRank);
@@ -11587,6 +11733,8 @@ const searchOptions = Object.keys(birdMaps);
         activeRouteRank = 1;
         activeMapZoomOffset = defaultMapZoomOffset;
         activeMapPan = { x: 0, y: 0 };
+        document.querySelector("[data-map-search-suggestions]").classList.remove("show");
+        document.querySelector("[data-search-options]").classList.remove("suggestions-open");
         renderMap();
       }
 
@@ -11888,6 +12036,29 @@ const searchOptions = Object.keys(birdMaps);
         return hints.find((hint) => hint.terms.some((term) => value.includes(term)))?.text || "鸟类特征";
       }
 
+      function getRecognitionBirdEvidence(predictions) {
+        const birdTerms = [
+          "bird", "bulbul", "blackbird", "thrush", "robin", "heron", "egret", "bittern", "crane", "stork",
+          "cormorant", "kingfisher", "bee eater", "jacamar", "moorhen", "coot", "duck", "drake", "goose",
+          "swan", "merganser", "dove", "pigeon", "magpie", "jay", "sparrow", "finch", "brambling",
+          "goldfinch", "junco", "bunting", "chickadee", "titmouse", "swallow", "shrike", "woodpecker",
+          "kite", "hawk", "eagle", "falcon", "kestrel", "vulture", "owl", "sandpiper", "plover",
+          "avocet", "lapwing", "turnstone", "warbler", "wagtail", "partridge", "quail", "pheasant",
+          "peacock", "ostrich", "flamingo", "pelican", "albatross", "lorikeet", "parrot", "macaw"
+        ];
+        const strongest = predictions.reduce((best, prediction) => {
+          const label = String(prediction.className || "").toLowerCase();
+          const probability = prediction.probability || 0;
+          const isBird = birdTerms.some((term) => label.includes(term));
+          return isBird && probability > best.probability ? { label: prediction.className, probability } : best;
+        }, { label: "", probability: 0 });
+        return {
+          hasBird: strongest.probability >= 0.08,
+          label: strongest.label,
+          probability: strongest.probability,
+        };
+      }
+
       function makeRecognitionMeta(name, predictionLabel, confidence) {
         const profile = getBirdProfile(name);
         const group = profile?.group || profile?.location?.split(" · ")?.pop() || "南京常见鸟种";
@@ -12011,6 +12182,9 @@ const searchOptions = Object.keys(birdMaps);
       async function buildRecognitionCandidates(predictions, imageElement, fileName = "") {
         const scores = new Map();
         const labelsByBird = new Map();
+        const birdEvidence = getRecognitionBirdEvidence(predictions);
+        const filenameHints = getFilenameBirdHints(fileName);
+        if (!birdEvidence.hasBird && !filenameHints.length) return [];
         predictions.forEach((prediction, predictionIndex) => {
           const label = String(prediction.className || "").toLowerCase();
           recognitionRules.forEach((rule) => {
@@ -12022,7 +12196,7 @@ const searchOptions = Object.keys(birdMaps);
           });
         });
 
-        getFilenameBirdHints(fileName).forEach((name) => {
+        filenameHints.forEach((name) => {
           addRecognitionScore(scores, labelsByBird, name, 1.25, "文件名线索命中");
         });
 
@@ -12042,7 +12216,7 @@ const searchOptions = Object.keys(birdMaps);
           }
         }));
 
-        if (scores.size < 3) {
+        if (scores.size < 3 && birdEvidence.hasBird) {
           visualMatches
             .sort((a, b) => b.similarity - a.similarity)
             .slice(0, 5)
@@ -12575,9 +12749,25 @@ const searchOptions = Object.keys(birdMaps);
         bindToastTargets();
       });
       document.querySelector("[data-submit-map-search]").addEventListener("click", submitMapSearch);
+      document.querySelector("[data-map-search]").addEventListener("input", (event) => {
+        renderMapSearchOptions(event.target.value);
+      });
+      document.querySelector("[data-map-search]").addEventListener("focus", (event) => {
+        renderMapSearchOptions(event.target.value);
+      });
+      document.querySelector("[data-map-search]").addEventListener("blur", () => {
+        window.setTimeout(() => {
+          document.querySelector("[data-map-search-suggestions]").classList.remove("show");
+          document.querySelector("[data-search-options]").classList.remove("suggestions-open");
+        }, 160);
+      });
       document.querySelector("[data-map-search]").addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
           submitMapSearch();
+        }
+        if (event.key === "Escape") {
+          document.querySelector("[data-map-search-suggestions]").classList.remove("show");
+          document.querySelector("[data-search-options]").classList.remove("suggestions-open");
         }
       });
       document.querySelector(".route-list").addEventListener("scroll", () => {
